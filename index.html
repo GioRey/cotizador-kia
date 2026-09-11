@@ -1,9 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KIA MAX - Cotizador Interactivo</title>
+    <title>COTIZACIÓN TU AUTO KIA AQUÍ</title>
+
+    <!-- Meta Datos Open Graph para WhatsApp y Redes Sociales -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="COTIZACIÓN TU AUTO KIA AQUÍ">
+    <meta property="og:description"
+        content="Obtén la cotización de tu auto KIA en segundos. Tasa personalizada, enganche a tu medida y mensualidades al instante.">
+    <!-- Reemplaza la siguiente URL por la imagen pública que quieras que se muestre en WhatsApp -->
+    <meta property="og:image" content="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?q=80&w=1000&auto=format&fit=crop">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Meta Datos Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="COTIZACIÓN TU AUTO KIA AQUÍ">
+    <meta name="twitter:description" content="Obtén la cotización de tu auto KIA en segundos.">
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?q=80&w=1000&auto=format&fit=crop">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -11,44 +29,49 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #F8F9FA;
+            background-color: #000000;
+            color: #FFFFFF;
         }
+
         .kia-card {
-            background: #FFFFFF;
+            background: #111111;
             border-radius: 20px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
         }
+
         .custom-select {
             appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%206b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%20ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat;
             background-position: right 1rem center;
             background-size: 1.25em;
         }
     </style>
 </head>
+
 <body class="min-h-screen py-8 px-4 flex flex-col justify-center items-center">
 
     <!-- Container principal -->
     <div class="w-full max-w-md space-y-6">
-        
+
         <!-- Header -->
         <div class="text-center space-y-1">
-            <span class="text-xs font-bold tracking-widest text-gray-500 uppercase">KIA MAX SALTILLO</span>
-            <h1 class="text-2xl font-bold text-gray-900">Tu cotización</h1>
+            <span class="text-xs font-bold tracking-widest text-red-500 uppercase">KIA MAX SALTILLO</span>
+            <h1 class="text-2xl font-bold text-white">Tu cotización</h1>
             <p class="text-xs text-gray-400">Asesor: Abel Ortiz Silva | Cel: 844 806 7192</p>
         </div>
 
         <!-- Form Card -->
-        <div class="kia-card p-6 space-y-5 border border-gray-100">
-            
-            <!-- Category Filter -->
+        <div class="kia-card p-6 space-y-5 border border-zinc-800">
+
+            <!-- Category Filter (Sin opción "TODOS") -->
             <div>
-                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Tipo de Vehículo</label>
-                <select id="categorySelect" class="custom-select w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-semibold focus:outline-none focus:ring-2 focus:ring-black">
-                    <option value="ALL">TODOS LOS TIPOS</option>
+                <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Tipo de Vehículo</label>
+                <select id="categorySelect"
+                    class="custom-select w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white font-semibold focus:outline-none focus:ring-2 focus:ring-white">
                     <option value="AUTOMAVIL">AUTOMÓVIL</option>
                     <option value="SUV">SUV</option>
                     <option value="HIBRIDO O ELECTRICO">HÍBRIDO / ELÉCTRICO</option>
@@ -57,84 +80,73 @@
 
             <!-- Model Dropdown -->
             <div>
-                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Unidad</label>
-                <select id="modelSelect" class="custom-select w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-bold focus:outline-none focus:ring-2 focus:ring-black">
+                <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Unidad</label>
+                <select id="modelSelect"
+                    class="custom-select w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white font-bold focus:outline-none focus:ring-2 focus:ring-white">
                 </select>
             </div>
 
             <!-- Version Dropdown -->
             <div>
-                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Versión</label>
-                <select id="versionSelect" class="custom-select w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-semibold focus:outline-none focus:ring-2 focus:ring-black">
+                <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Versión</label>
+                <select id="versionSelect"
+                    class="custom-select w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white font-semibold focus:outline-none focus:ring-2 focus:ring-white">
                 </select>
             </div>
 
             <!-- Vehicle Price Info Box -->
-            <div class="bg-gray-50 rounded-xl p-3 flex justify-between items-center border border-gray-100">
-                <span class="text-xs text-gray-500 font-medium">Precio de Lista:</span>
-                <span id="listPrice" class="text-base font-bold text-gray-900">$0.00</span>
+            <div class="bg-zinc-900 rounded-xl p-3 flex justify-between items-center border border-zinc-800">
+                <span class="text-xs text-gray-400 font-medium">Precio de Lista:</span>
+                <span id="listPrice" class="text-base font-bold text-white">$0.00</span>
             </div>
 
             <!-- Promo Banner -->
-            <div id="promoBanner" class="hidden bg-red-50 border border-red-100 rounded-xl p-3 text-xs text-red-700 font-medium flex items-center gap-2">
-                <i class="fa-solid fa-tag text-red-500"></i>
+            <div id="promoBanner"
+                class="hidden bg-red-950/50 border border-red-800/60 rounded-xl p-3 text-xs text-red-300 font-medium flex items-center gap-2">
+                <i class="fa-solid fa-tag text-red-400"></i>
                 <span id="promoText"></span>
             </div>
 
-            <!-- Enganche Input / Select -->
+            <!-- Enganche Input (Solo Importe) -->
             <div>
-                <div class="flex justify-between items-center mb-1">
-                    <label class="block text-xs font-semibold text-gray-500 uppercase">Enganche</label>
-                    <span id="downPaymentPercent" class="text-xs text-gray-400 font-medium">(20%)</span>
-                </div>
+                <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Enganche</label>
                 <div class="relative">
-                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-900 font-bold text-lg">$</span>
-                    <input type="number" id="downPaymentInput" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-8 pr-4 py-3 text-gray-900 font-bold text-xl focus:outline-none focus:ring-2 focus:ring-black" placeholder="85000">
-                </div>
-                <!-- Quick Enganche Chips -->
-                <div class="flex gap-2 mt-2" id="quickEngancheContainer">
-                    <button type="button" onclick="setEnganchePercent(0.15)" class="px-2.5 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-medium">15%</button>
-                    <button type="button" onclick="setEnganchePercent(0.20)" class="px-2.5 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-medium">20%</button>
-                    <button type="button" onclick="setEnganchePercent(0.30)" class="px-2.5 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-medium">30%</button>
-                    <button type="button" onclick="setEnganchePercent(0.40)" class="px-2.5 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-medium">40%</button>
-                    <button type="button" onclick="setEnganchePercent(0.50)" class="px-2.5 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-medium">50%</button>
+                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white font-bold text-lg">$</span>
+                    <input type="number" id="downPaymentInput"
+                        class="w-full bg-zinc-900 border border-zinc-700 rounded-xl pl-8 pr-4 py-3 text-white font-bold text-xl focus:outline-none focus:ring-2 focus:ring-white"
+                        placeholder="85000">
                 </div>
             </div>
 
-            <!-- Interest Rate Option -->
-            <div>
-                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Tasa Anual Estimada</label>
-                <select id="rateSelect" class="custom-select w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-black">
-                    <option value="0.129">12.90% (Tasa Preferencial Promedio)</option>
-                    <option value="0.1084">10.84% (Tasa Promocional Especial)</option>
-                    <option value="0.0899">8.99% (Tasa Especial K4 / Sonet)</option>
-                    <option value="0.1699">16.99% (Tasa Estándar)</option>
-                </select>
+            <!-- Tasa Anual Automática (Info) -->
+            <div class="bg-zinc-900 rounded-xl p-3 flex justify-between items-center border border-zinc-800">
+                <span class="text-xs text-gray-400 font-medium">Tasa Anual Estimada:</span>
+                <span id="rateLabel" class="text-xs font-bold text-emerald-400">12.90%</span>
             </div>
 
             <!-- Monthly Payments List -->
             <div>
-                <label class="block text-xs font-semibold text-gray-500 uppercase mb-2">Mensualidades</label>
-                <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden divide-y divide-gray-100 shadow-sm">
-                    
-                    <div class="p-3.5 flex justify-between items-center hover:bg-gray-50 transition cursor-pointer">
-                        <span class="text-sm font-medium text-gray-700">72 meses</span>
-                        <span id="month72" class="text-base font-bold text-gray-900">$0.00</span>
+                <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Mensualidades</label>
+                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden divide-y divide-zinc-800 shadow-sm">
+
+                    <div class="p-3.5 flex justify-between items-center hover:bg-zinc-800/50 transition cursor-pointer">
+                        <span class="text-sm font-medium text-gray-300">72 meses</span>
+                        <span id="month72" class="text-base font-bold text-white">$0.00</span>
                     </div>
 
-                    <div class="p-3.5 flex justify-between items-center hover:bg-gray-50 transition cursor-pointer">
-                        <span class="text-sm font-medium text-gray-700">60 meses</span>
-                        <span id="month60" class="text-base font-bold text-gray-900">$0.00</span>
+                    <div class="p-3.5 flex justify-between items-center hover:bg-zinc-800/50 transition cursor-pointer">
+                        <span class="text-sm font-medium text-gray-300">60 meses</span>
+                        <span id="month60" class="text-base font-bold text-white">$0.00</span>
                     </div>
 
-                    <div class="p-3.5 flex justify-between items-center hover:bg-gray-50 transition cursor-pointer">
-                        <span class="text-sm font-medium text-gray-700">48 meses</span>
-                        <span id="month48" class="text-base font-bold text-gray-900">$0.00</span>
+                    <div class="p-3.5 flex justify-between items-center hover:bg-zinc-800/50 transition cursor-pointer">
+                        <span class="text-sm font-medium text-gray-300">48 meses</span>
+                        <span id="month48" class="text-base font-bold text-white">$0.00</span>
                     </div>
 
-                    <div class="p-3.5 flex justify-between items-center hover:bg-gray-50 transition cursor-pointer">
-                        <span class="text-sm font-medium text-gray-700">36 meses</span>
-                        <span id="month36" class="text-base font-bold text-gray-900">$0.00</span>
+                    <div class="p-3.5 flex justify-between items-center hover:bg-zinc-800/50 transition cursor-pointer">
+                        <span class="text-sm font-medium text-gray-300">36 meses</span>
+                        <span id="month36" class="text-base font-bold text-white">$0.00</span>
                     </div>
 
                 </div>
@@ -142,15 +154,15 @@
 
             <!-- Action Buttons -->
             <div class="space-y-2 pt-2">
-                <!-- Modal Contact Button -->
-                <button onclick="openModal()" class="w-full bg-black hover:bg-gray-800 text-white font-semibold py-3.5 rounded-2xl transition duration-200 flex items-center justify-center gap-2 shadow-lg">
+                <button onclick="openModal()"
+                    class="w-full bg-white hover:bg-gray-200 text-black font-semibold py-3.5 rounded-2xl transition duration-200 flex items-center justify-center gap-2 shadow-lg">
                     <span>¿Deseas más información? Contáctanos</span>
                     <i class="fa-solid fa-chevron-right text-xs"></i>
                 </button>
 
-                <!-- Botón para Descargar / Imprimir PDF directo -->
-                <button onclick="downloadPDF()" class="w-full bg-slate-100 hover:bg-slate-200 text-gray-800 font-semibold py-3 rounded-2xl transition duration-200 flex items-center justify-center gap-2 border border-gray-200">
-                    <i class="fa-solid fa-file-pdf text-red-600"></i>
+                <button onclick="downloadPDF()"
+                    class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-semibold py-3 rounded-2xl transition duration-200 flex items-center justify-center gap-2 border border-zinc-700">
+                    <i class="fa-solid fa-file-pdf text-red-500"></i>
                     <span>Descargar Cotización (PDF)</span>
                 </button>
             </div>
@@ -158,35 +170,39 @@
         </div>
 
         <div class="text-center">
-            <p class="text-[10px] text-gray-400">Precios y promociones válidos sujeto a cambios. KIA MAX Saltillo.</p>
+            <p class="text-[10px] text-gray-500">Precios y promociones válidos sujeto a cambios. KIA MAX Saltillo.</p>
         </div>
     </div>
 
     <!-- Contact Modal -->
-    <div id="contactModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl relative">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+    <div id="contactModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
 
             <div class="text-center space-y-1">
-                <h3 class="text-xl font-bold text-gray-900">Contactar Asesor</h3>
-                <p class="text-xs text-gray-500">Envía tu cotización directamente a Abel Ortiz Silva</p>
+                <h3 class="text-xl font-bold text-white">Contactar Asesor</h3>
+                <p class="text-xs text-gray-400">Envía tu cotización directamente a Abel Ortiz Silva</p>
             </div>
 
             <div class="space-y-3 pt-2">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Tu Nombre Completo</label>
-                    <input type="text" id="clientName" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black" placeholder="Ej. Juan Pérez">
+                    <label class="block text-xs font-semibold text-gray-400 mb-1">Tu Nombre Completo</label>
+                    <input type="text" id="clientName"
+                        class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white"
+                        placeholder="Ej. Juan Pérez">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Tu Teléfono</label>
-                    <input type="tel" id="clientPhone" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black" placeholder="Ej. 844 123 4567">
+                    <label class="block text-xs font-semibold text-gray-400 mb-1">Tu Teléfono</label>
+                    <input type="tel" id="clientPhone"
+                        class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white"
+                        placeholder="Ej. 844 123 4567">
                 </div>
 
                 <!-- Resumen previo -->
-                <div class="bg-gray-50 p-3 rounded-xl text-xs space-y-1 text-gray-600 border border-gray-100">
+                <div class="bg-zinc-800/60 p-3 rounded-xl text-xs space-y-1 text-gray-300 border border-zinc-700/50">
                     <p><strong>Unidad:</strong> <span id="summaryUnit">-</span></p>
                     <p><strong>Versión:</strong> <span id="summaryVersion">-</span></p>
                     <p><strong>Enganche:</strong> <span id="summaryEnganche">-</span></p>
@@ -194,17 +210,20 @@
                 </div>
 
                 <div class="pt-2 space-y-2">
-                    <button onclick="sendWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition">
+                    <button onclick="sendWhatsApp()"
+                        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition">
                         <i class="fa-brands fa-whatsapp text-lg"></i>
                         <span>Enviar por WhatsApp</span>
                     </button>
 
-                    <button onclick="sendEmail()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition">
+                    <button onclick="sendEmail()"
+                        class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition border border-zinc-700">
                         <i class="fa-regular fa-envelope text-lg"></i>
                         <span>Enviar por Correo</span>
                     </button>
 
-                    <button onclick="downloadPDFFromModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition">
+                    <button onclick="downloadPDFFromModal()"
+                        class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition">
                         <i class="fa-solid fa-file-pdf text-lg"></i>
                         <span>Descargar PDF</span>
                     </button>
@@ -215,7 +234,7 @@
 
     <!-- Data & Script logic -->
     <script>
-        const vehicles = [{"model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "L Standard", "price": 304900, "promo": "Tasa desde 7.99% a 36 Meses"}, {"model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "L Autom\u00e1tico", "price": 335500, "promo": "Bono de $15,000 + 30% Enganche Tasa 10.84%"}, {"model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "LX Standard", "price": 358600, "promo": "Tasa promocional disponible"}, {"model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "LX Autom\u00e1tico", "price": 372600, "promo": "Tasa promocional disponible"}, {"model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "EX Autom\u00e1tico", "price": 400300, "promo": "Tasa promocional disponible"}, {"model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "EX Pack Autom\u00e1tico", "price": 435900, "promo": "Tasa promocional disponible"}, {"model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "LX Standard", "price": 429500, "promo": "Tasa Especial desde 8.99% a 36 Meses"}, {"model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "LX Autom\u00e1tico", "price": 443500, "promo": "Tasa Especial desde 8.99% a 36 Meses"}, {"model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "EX Autom\u00e1tico", "price": 487400, "promo": "Tasa Especial desde 8.99% a 36 Meses"}, {"model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "GT Line Autom\u00e1tico", "price": 520700, "promo": "Tasa Especial desde 8.99% a 36 Meses"}, {"model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "GT Line Turbo Autom\u00e1tico", "price": 574600, "promo": "Tasa Especial desde 8.99% a 36 Meses"}, {"model": "K4 Hatchback 2027", "category": "AUTOMOVIL", "version": "EX Autom\u00e1tico", "price": 489900, "promo": "Tasa Especial desde 8.99% a 36 Meses"}, {"model": "K4 Hatchback 2027", "category": "AUTOMOVIL", "version": "GT Line Autom\u00e1tico", "price": 528900, "promo": "Tasa Especial desde 8.99% a 36 Meses"}, {"model": "K4 Hatchback 2027", "category": "AUTOMOVIL", "version": "GT Line Turbo Autom\u00e1tico", "price": 581200, "promo": "Tasa Especial desde 8.99% a 36 Meses"}, {"model": "Sonet SUV 2027", "category": "SUV", "version": "LX Standard", "price": 398400, "promo": "Tasa desde 10.84% a 60 Meses"}, {"model": "Sonet SUV 2027", "category": "SUV", "version": "LX Autom\u00e1tica", "price": 411900, "promo": "Tasa desde 10.84% a 60 Meses"}, {"model": "Sonet SUV 2027", "category": "SUV", "version": "EX Autom\u00e1tica", "price": 433000, "promo": "Tasa desde 10.84% a 60 Meses"}, {"model": "Sonet SUV 2027", "category": "SUV", "version": "SX Autom\u00e1tica", "price": 475900, "promo": "Tasa desde 10.84% a 60 Meses"}, {"model": "Seltos SUV 2026", "category": "SUV", "version": "EX Autom\u00e1tico", "price": 470900, "promo": "Bono de $35,000 + 30% Enganche Tasa 10.84%"}, {"model": "Seltos SUV 2026", "category": "SUV", "version": "EX Pack Autom\u00e1tico", "price": 528900, "promo": "Bono de $35,000 disponible"}, {"model": "Seltos SUV 2026", "category": "SUV", "version": "SX Autom\u00e1tico", "price": 551900, "promo": "Bono de $35,000 disponible"}, {"model": "Seltos SUV 2026", "category": "SUV", "version": "GT Line Autom\u00e1tico", "price": 587900, "promo": "Bono de $35,000 disponible"}, {"model": "Sportage SUV 2027", "category": "SUV", "version": "EX Autom\u00e1tica", "price": 647900, "promo": "Bono de $15,000 + Tasa desde 10.84% a 60 Meses"}, {"model": "Sportage SUV 2027", "category": "SUV", "version": "EX Pack Autom\u00e1tico", "price": 706900, "promo": "Bono de $15,000 disponible"}, {"model": "Sportage SUV 2027", "category": "SUV", "version": "SXL Autom\u00e1tico", "price": 766900, "promo": "Bono de $15,000 disponible"}, {"model": "Sportage SUV H\u00edbrida 2026", "category": "HIBRIDO O ELECTRICO", "version": "EX Pack Autom\u00e1tica", "price": 799900, "promo": "Bono de $20,000 + Tasa desde 10.84% a 60 Meses"}, {"model": "Sportage SUV H\u00edbrida 2026", "category": "HIBRIDO O ELECTRICO", "version": "X Line Autom\u00e1tico", "price": 893200, "promo": "Bono de $20,000 disponible"}, {"model": "Sportage SUV H\u00edbrida 2026", "category": "HIBRIDO O ELECTRICO", "version": "X Line Terra Autom\u00e1tico", "price": 894200, "promo": "Bono de $20,000 disponible"}, {"model": "Sorento SUV 2026", "category": "SUV", "version": "EX Autom\u00e1tica", "price": 833200, "promo": "Bono de $60,000 + Tasa desde 10.84% a 60 Meses"}, {"model": "Sorento SUV 2026", "category": "SUV", "version": "EX Pack Autom\u00e1tico", "price": 897600, "promo": "Bono de $60,000 disponible"}, {"model": "Sorento SUV 2026", "category": "SUV", "version": "SXL Autom\u00e1tico", "price": 992900, "promo": "Bono de $60,000 disponible"}];
+        const vehicles = [{ "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "L Standard", "price": 304900, "promo": "Tasa desde 7.99% a 36 Meses" }, { "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "L Autom\u00e1tico", "price": 335500, "promo": "Bono de $15,000 + Tasa 10.84%" }, { "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "LX Standard", "price": 358600, "promo": "Tasa promocional disponible" }, { "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "LX Autom\u00e1tico", "price": 372600, "promo": "Tasa promocional disponible" }, { "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "EX Autom\u00e1tico", "price": 400300, "promo": "Tasa promocional disponible" }, { "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "EX Pack Autom\u00e1tico", "price": 435900, "promo": "Tasa promocional disponible" }, { "model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "LX Standard", "price": 429500, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "LX Autom\u00e1tico", "price": 443500, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "EX Autom\u00e1tico", "price": 487400, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "GT Line Autom\u00e1tico", "price": 520700, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "GT Line Turbo Autom\u00e1tico", "price": 574600, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Hatchback 2027", "category": "AUTOMOVIL", "version": "EX Autom\u00e1tico", "price": 489900, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Hatchback 2027", "category": "AUTOMOVIL", "version": "GT Line Autom\u00e1tico", "price": 528900, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Hatchback 2027", "category": "AUTOMOVIL", "version": "GT Line Turbo Autom\u00e1tico", "price": 581200, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "Sonet SUV 2027", "category": "SUV", "version": "LX Standard", "price": 398400, "promo": "Tasa desde 10.84% a 60 Meses" }, { "model": "Sonet SUV 2027", "category": "SUV", "version": "LX Autom\u00e1tica", "price": 411900, "promo": "Tasa desde 10.84% a 60 Meses" }, { "model": "Sonet SUV 2027", "category": "SUV", "version": "EX Autom\u00e1tica", "price": 433000, "promo": "Tasa desde 10.84% a 60 Meses" }, { "model": "Sonet SUV 2027", "category": "SUV", "version": "SX Autom\u00e1tica", "price": 475900, "promo": "Tasa desde 10.84% a 60 Meses" }, { "model": "Seltos SUV 2026", "category": "SUV", "version": "EX Autom\u00e1tico", "price": 470900, "promo": "Bono de $35,000 + Tasa 10.84%" }, { "model": "Seltos SUV 2026", "category": "SUV", "version": "EX Pack Autom\u00e1tico", "price": 528900, "promo": "Bono de $35,000 disponible" }, { "model": "Seltos SUV 2026", "category": "SUV", "version": "SX Autom\u00e1tico", "price": 551900, "promo": "Bono de $35,000 disponible" }, { "model": "Seltos SUV 2026", "category": "SUV", "version": "GT Line Autom\u00e1tico", "price": 587900, "promo": "Bono de $35,000 disponible" }, { "model": "Sportage SUV 2027", "category": "SUV", "version": "EX Autom\u00e1tica", "price": 647900, "promo": "Bono de $15,000 + Tasa desde 10.84%" }, { "model": "Sportage SUV 2027", "category": "SUV", "version": "EX Pack Autom\u00e1tico", "price": 706900, "promo": "Bono de $15,000 disponible" }, { "model": "Sportage SUV 2027", "category": "SUV", "version": "SXL Autom\u00e1tico", "price": 766900, "promo": "Bono de $15,000 disponible" }, { "model": "Sportage SUV H\u00edbrida 2026", "category": "HIBRIDO O ELECTRICO", "version": "EX Pack Autom\u00e1tica", "price": 799900, "promo": "Bono de $20,000 + Tasa desde 10.84%" }, { "model": "Sportage SUV H\u00edbrida 2026", "category": "HIBRIDO O ELECTRICO", "version": "X Line Autom\u00e1tico", "price": 893200, "promo": "Bono de $20,000 disponible" }, { "model": "Sportage SUV H\u00edbrida 2026", "category": "HIBRIDO O ELECTRICO", "version": "X Line Terra Autom\u00e1tico", "price": 894200, "promo": "Bono de $20,000 disponible" }, { "model": "Sorento SUV 2026", "category": "SUV", "version": "EX Autom\u00e1tica", "price": 833200, "promo": "Bono de $60,000 + Tasa desde 10.84%" }, { "model": "Sorento SUV 2026", "category": "SUV", "version": "EX Pack Autom\u00e1tico", "price": 897600, "promo": "Bono de $60,000 disponible" }, { "model": "Sorento SUV 2026", "category": "SUV", "version": "SXL Autom\u00e1tico", "price": 992900, "promo": "Bono de $60,000 disponible" }];
         const advisorEmail = "abel.ortiz@kiamax.com.mx";
         const advisorPhone = "528448067192";
 
@@ -224,12 +243,12 @@
         const versionSelect = document.getElementById('versionSelect');
         const listPriceEl = document.getElementById('listPrice');
         const downPaymentInput = document.getElementById('downPaymentInput');
-        const downPaymentPercentEl = document.getElementById('downPaymentPercent');
-        const rateSelect = document.getElementById('rateSelect');
+        const rateLabel = document.getElementById('rateLabel');
         const promoBanner = document.getElementById('promoBanner');
         const promoText = document.getElementById('promoText');
 
         let currentPrice = 0;
+        let currentRate = 0.129; // Tasa por defecto (12.90%)
 
         function formatCurrency(num) {
             return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(num);
@@ -238,9 +257,9 @@
         function populateModels() {
             const cat = categorySelect.value;
             modelSelect.innerHTML = '';
-            
+
             const models = [...new Set(vehicles
-                .filter(v => cat === 'ALL' || v.category === cat)
+                .filter(v => v.category === cat)
                 .map(v => v.model))];
 
             models.forEach(m => {
@@ -268,24 +287,13 @@
             updateQuote();
         }
 
-        function setEnganchePercent(percent) {
-            if (currentPrice > 0) {
-                downPaymentInput.value = Math.round(currentPrice * percent);
-                calculatePayments();
-            }
-        }
-
         function calculatePayments() {
             const price = currentPrice;
             let enganche = parseFloat(downPaymentInput.value) || 0;
-            if (enganche >= price) enganche = price * 0.9; // Cap at 90%
-            
-            const pPct = ((enganche / price) * 100).toFixed(0);
-            downPaymentPercentEl.textContent = `(${pPct}%)`;
+            if (enganche >= price) enganche = price * 0.9;
 
             const loanAmount = price - enganche;
-            const annualRate = parseFloat(rateSelect.value);
-            const monthlyRate = annualRate / 12;
+            const monthlyRate = currentRate / 12;
 
             function getMonthly(months) {
                 if (loanAmount <= 0) return 0;
@@ -307,10 +315,23 @@
             if (item) {
                 currentPrice = item.price;
                 listPriceEl.textContent = formatCurrency(item.price);
-                
+
                 if (!downPaymentInput.value || downPaymentInput.dataset.manual !== "true") {
                     downPaymentInput.value = Math.round(item.price * 0.20);
                 }
+
+                // Detección automática de la tasa según promoción del auto
+                if (item.promo && item.promo.includes('7.99%')) {
+                    currentRate = 0.0799;
+                } else if (item.promo && item.promo.includes('8.99%')) {
+                    currentRate = 0.0899;
+                } else if (item.promo && item.promo.includes('10.84%')) {
+                    currentRate = 0.1084;
+                } else {
+                    currentRate = 0.129; // Tasa preferencial estándar
+                }
+
+                rateLabel.textContent = `${(currentRate * 100).toFixed(2)}% (Especial)`;
 
                 if (item.promo) {
                     promoBanner.classList.remove('hidden');
@@ -326,7 +347,6 @@
         categorySelect.addEventListener('change', populateModels);
         modelSelect.addEventListener('change', populateVersions);
         versionSelect.addEventListener('change', updateQuote);
-        rateSelect.addEventListener('change', calculatePayments);
         downPaymentInput.addEventListener('input', () => {
             downPaymentInput.dataset.manual = "true";
             calculatePayments();
@@ -338,7 +358,7 @@
             document.getElementById('summaryVersion').textContent = versionSelect.value;
             document.getElementById('summaryEnganche').textContent = formatCurrency(parseFloat(downPaymentInput.value) || 0);
             document.getElementById('summaryMonthly').textContent = document.getElementById('month48').textContent;
-            
+
             document.getElementById('contactModal').classList.remove('hidden');
         }
 
@@ -359,16 +379,16 @@
             const m36 = document.getElementById('month36').textContent;
 
             return `¡Hola Abel! Mi nombre es ${name} (Tel: ${phone}). Me interesa cotizar la unidad:\n` +
-                   `🚗 *Unidad:* ${unit}\n` +
-                   `⚙️ *Versión:* ${ver}\n` +
-                   `🏷️ *Precio:* ${price}\n` +
-                   `💵 *Enganche:* ${eng}\n\n` +
-                   `*Plazos y Mensualidades:*\n` +
-                   `• 72 meses: ${m72}\n` +
-                   `• 60 meses: ${m60}\n` +
-                   `• 48 meses: ${m48}\n` +
-                   `• 36 meses: ${m36}\n\n` +
-                   `Quedo en espera de tus comentarios para continuar con mi trámite.`;
+                `🚗 *Unidad:* ${unit}\n` +
+                `⚙️ *Versión:* ${ver}\n` +
+                `🏷️ *Precio:* ${price}\n` +
+                `💵 *Enganche:* ${eng}\n\n` +
+                `*Plazos y Mensualidades:*\n` +
+                `• 72 meses: ${m72}\n` +
+                `• 60 meses: ${m60}\n` +
+                `• 48 meses: ${m48}\n` +
+                `• 36 meses: ${m36}\n\n` +
+                `Quedo en espera de tus comentarios para continuar con mi trámite.`;
         }
 
         function sendWhatsApp() {
@@ -382,134 +402,131 @@
             window.open(`mailto:${advisorEmail}?subject=${subject}&body=${text}`, '_blank');
         }
 
-        // --- FUNCIÓN PARA GENERAR Y DESCARGAR EL PDF (CORREGIDA) ---
-            function generatePDF() {
-                const clientName = document.getElementById('clientName').value || 'Cliente';
-                const clientPhone = document.getElementById('clientPhone').value || 'N/A';
-                const unit = modelSelect.value;
-                const ver = versionSelect.value;
-                const price = formatCurrency(currentPrice);
-                const eng = formatCurrency(parseFloat(downPaymentInput.value) || 0);
-                const engPct = downPaymentPercentEl.textContent;
-                const promo = promoBanner.classList.contains('hidden') ? '' : promoText.textContent;
-                const rate = rateSelect.options[rateSelect.selectedIndex].text;
+        // --- FUNCIÓN PARA GENERAR Y DESCARGAR EL PDF ---
+        function generatePDF() {
+            const clientName = document.getElementById('clientName').value || 'Cliente';
+            const clientPhone = document.getElementById('clientPhone').value || 'N/A';
+            const unit = modelSelect.value;
+            const ver = versionSelect.value;
+            const price = formatCurrency(currentPrice);
+            const eng = formatCurrency(parseFloat(downPaymentInput.value) || 0);
+            const promo = promoBanner.classList.contains('hidden') ? '' : promoText.textContent;
+            const rate = rateLabel.textContent;
 
-                const m72 = document.getElementById('month72').textContent;
-                const m60 = document.getElementById('month60').textContent;
-                const m48 = document.getElementById('month48').textContent;
-                const m36 = document.getElementById('month36').textContent;
+            const m72 = document.getElementById('month72').textContent;
+            const m60 = document.getElementById('month60').textContent;
+            const m48 = document.getElementById('month48').textContent;
+            const m36 = document.getElementById('month36').textContent;
 
-                const today = new Date().toLocaleDateString('es-MX', {
-                    year: 'numeric', month: 'long', day: 'numeric'
-                });
+            const today = new Date().toLocaleDateString('es-MX', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
 
-                // Plantilla HTML del PDF con reglas CSS para evitar saltos de página dentro de secciones clave
-                const pdfElement = document.createElement('div');
-                pdfElement.style.padding = '20px 30px';
-                pdfElement.style.fontFamily = 'Arial, sans-serif';
-                pdfElement.style.color = '#111827';
-                pdfElement.style.fontSize = '12px';
+            const pdfElement = document.createElement('div');
+            pdfElement.style.padding = '20px 30px';
+            pdfElement.style.fontFamily = 'Arial, sans-serif';
+            pdfElement.style.color = '#111827';
+            pdfElement.style.fontSize = '12px';
 
-                pdfElement.innerHTML = `
-        <div style="border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h1 style="font-size: 22px; font-weight: bold; margin: 0;">KIA MAX SALTILLO</h1>
-                <p style="font-size: 11px; color: #6B7280; margin: 2px 0 0 0;">Cotización de Financiamiento</p>
-            </div>
-            <div style="text-align: right; font-size: 11px; color: #374151;">
-                <p style="margin: 0;"><strong>Fecha:</strong> ${today}</p>
-                <p style="margin: 2px 0 0 0;"><strong>Asesor:</strong> Abel Ortiz Silva</p>
-                <p style="margin: 2px 0 0 0;"><strong>Teléfono:</strong> 844 806 7192</p>
-            </div>
-        </div>
+            pdfElement.innerHTML = `
+                <div style="border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1 style="font-size: 22px; font-weight: bold; margin: 0;">KIA MAX SALTILLO</h1>
+                        <p style="font-size: 11px; color: #6B7280; margin: 2px 0 0 0;">Cotización de Financiamiento</p>
+                    </div>
+                    <div style="text-align: right; font-size: 11px; color: #374151;">
+                        <p style="margin: 0;"><strong>Fecha:</strong> ${today}</p>
+                        <p style="margin: 2px 0 0 0;"><strong>Asesor:</strong> Abel Ortiz Silva</p>
+                        <p style="margin: 2px 0 0 0;"><strong>Teléfono:</strong> 844 806 7192</p>
+                    </div>
+                </div>
 
-        ${clientName !== 'Cliente' ? `
-        <div style="background-color: #F3F4F6; padding: 8px 12px; border-radius: 6px; margin-bottom: 15px;">
-            <p style="margin: 0; font-size: 12px;"><strong>Atención a:</strong> ${clientName}</p>
-            <p style="margin: 2px 0 0 0; font-size: 11px; color: #4B5563;"><strong>Teléfono:</strong> ${clientPhone}</p>
-        </div>
-        ` : ''}
+                ${clientName !== 'Cliente' ? `
+                <div style="background-color: #F3F4F6; padding: 8px 12px; border-radius: 6px; margin-bottom: 15px;">
+                    <p style="margin: 0; font-size: 12px;"><strong>Atención a:</strong> ${clientName}</p>
+                    <p style="margin: 2px 0 0 0; font-size: 11px; color: #4B5563;"><strong>Teléfono:</strong> ${clientPhone}</p>
+                </div>
+                ` : ''}
 
-        <div style="margin-bottom: 15px;">
-            <h2 style="font-size: 14px; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px; margin-bottom: 8px;">Detalles de la Unidad</h2>
-            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-                <tr>
-                    <td style="padding: 4px 0; color: #6B7280;">Vehículo / Modelo:</td>
-                    <td style="padding: 4px 0; font-weight: bold; text-align: right;">${unit}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 4px 0; color: #6B7280;">Versión:</td>
-                    <td style="padding: 4px 0; font-weight: bold; text-align: right;">${ver}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 4px 0; color: #6B7280;">Precio de Lista:</td>
-                    <td style="padding: 4px 0; font-weight: bold; text-align: right; font-size: 14px;">${price}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 4px 0; color: #6B7280;">Enganche Solicitado:</td>
-                    <td style="padding: 4px 0; font-weight: bold; text-align: right; color: #059669;">${eng} <span style="font-size: 10px; color: #6B7280;">${engPct}</span></td>
-                </tr>
-                <tr>
-                    <td style="padding: 4px 0; color: #6B7280;">Tasa Aplicada:</td>
-                    <td style="padding: 4px 0; font-weight: bold; text-align: right;">${rate}</td>
-                </tr>
-            </table>
-        </div>
+                <div style="margin-bottom: 15px;">
+                    <h2 style="font-size: 14px; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px; margin-bottom: 8px;">Detalles de la Unidad</h2>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                        <tr>
+                            <td style="padding: 4px 0; color: #6B7280;">Vehículo / Modelo:</td>
+                            <td style="padding: 4px 0; font-weight: bold; text-align: right;">${unit}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px 0; color: #6B7280;">Versión:</td>
+                            <td style="padding: 4px 0; font-weight: bold; text-align: right;">${ver}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px 0; color: #6B7280;">Precio de Lista:</td>
+                            <td style="padding: 4px 0; font-weight: bold; text-align: right; font-size: 14px;">${price}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px 0; color: #6B7280;">Enganche Solicitado:</td>
+                            <td style="padding: 4px 0; font-weight: bold; text-align: right; color: #059669;">${eng}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px 0; color: #6B7280;">Tasa Aplicada:</td>
+                            <td style="padding: 4px 0; font-weight: bold; text-align: right;">${rate}</td>
+                        </tr>
+                    </table>
+                </div>
 
-        ${promo ? `
-        <div style="background-color: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; padding: 8px; border-radius: 6px; font-size: 11px; margin-bottom: 15px;">
-            <strong>Promoción Activa:</strong> ${promo}
-        </div>
-        ` : ''}
+                ${promo ? `
+                <div style="background-color: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; padding: 8px; border-radius: 6px; font-size: 11px; margin-bottom: 15px;">
+                    <strong>Promoción Activa:</strong> ${promo}
+                </div>
+                ` : ''}
 
-        <!-- Se evita que la tabla o sus contenedores se dividan horizontalmente -->
-        <div style="margin-bottom: 20px; page-break-inside: avoid; break-inside: avoid;">
-            <h2 style="font-size: 14px; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px; margin-bottom: 8px;">Proyección de Mensualidades</h2>
-            <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
-                <thead>
-                    <tr style="background-color: #F9FAFB; border-bottom: 1px solid #E5E7EB;">
-                        <th style="padding: 6px 8px;">Plazo</th>
-                        <th style="padding: 6px 8px; text-align: right;">Pago Mensual Estimado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style="border-bottom: 1px solid #F3F4F6;">
-                        <td style="padding: 8px;">72 Meses</td>
-                        <td style="padding: 8px; text-align: right; font-weight: bold;">${m72}</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #F3F4F6;">
-                        <td style="padding: 8px;">60 Meses</td>
-                        <td style="padding: 8px; text-align: right; font-weight: bold;">${m60}</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #F3F4F6; background-color: #F9FAFB;">
-                        <td style="padding: 8px;"><strong>48 Meses (Recomendado)</strong></td>
-                        <td style="padding: 8px; text-align: right; font-weight: bold; color: #111827; font-size: 13px;">${m48}</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #F3F4F6;">
-                        <td style="padding: 8px;">36 Meses</td>
-                        <td style="padding: 8px; text-align: right; font-weight: bold;">${m36}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                <div style="margin-bottom: 20px; page-break-inside: avoid; break-inside: avoid;">
+                    <h2 style="font-size: 14px; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px; margin-bottom: 8px;">Proyección de Mensualidades</h2>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
+                        <thead>
+                            <tr style="background-color: #F9FAFB; border-bottom: 1px solid #E5E7EB;">
+                                <th style="padding: 6px 8px;">Plazo</th>
+                                <th style="padding: 6px 8px; text-align: right;">Pago Mensual Estimado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #F3F4F6;">
+                                <td style="padding: 8px;">72 Meses</td>
+                                <td style="padding: 8px; text-align: right; font-weight: bold;">${m72}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #F3F4F6;">
+                                <td style="padding: 8px;">60 Meses</td>
+                                <td style="padding: 8px; text-align: right; font-weight: bold;">${m60}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #F3F4F6; background-color: #F9FAFB;">
+                                <td style="padding: 8px;"><strong>48 Meses (Recomendado)</strong></td>
+                                <td style="padding: 8px; text-align: right; font-weight: bold; color: #111827; font-size: 13px;">${m48}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #F3F4F6;">
+                                <td style="padding: 8px;">36 Meses</td>
+                                <td style="padding: 8px; text-align: right; font-weight: bold;">${m36}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-        <div style="margin-top: 25px; border-top: 1px solid #E5E7EB; padding-top: 10px; font-size: 9px; color: #9CA3AF; text-align: center; page-break-inside: avoid; break-inside: avoid;">
-            <p style="margin: 0;">Cotización de carácter informativo. Sujeta a aprobación de crédito. Precios y promociones sujetos a cambios sin previo aviso.</p>
-            <p style="margin-top: 3px;">KIA MAX Saltillo | Asesoría: Abel Ortiz Silva (844 806 7192)</p>
-        </div>
-    `;
+                <div style="margin-top: 25px; border-top: 1px solid #E5E7EB; padding-top: 10px; font-size: 9px; color: #9CA3AF; text-align: center; page-break-inside: avoid; break-inside: avoid;">
+                    <p style="margin: 0;">Cotización de carácter informativo. Sujeta a aprobación de crédito. Precios y promociones sujetos a cambios sin previo aviso.</p>
+                    <p style="margin-top: 3px;">KIA MAX Saltillo | Asesoría: Abel Ortiz Silva (844 806 7192)</p>
+                </div>
+            `;
 
-                const opt = {
-                    margin: [8, 8, 8, 8], // Márgenes superior, izquierdo, inferior, derecho en mm
-                    filename: `Cotizacion_KIA_${unit.replace(/ /g, '_')}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, scrollY: 0 },
-                    jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
-                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-                };
+            const opt = {
+                margin: [8, 8, 8, 8],
+                filename: `Cotizacion_KIA_${unit.replace(/ /g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, scrollY: 0 },
+                jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            };
 
-                html2pdf().set(opt).from(pdfElement).save();
-            }
+            html2pdf().set(opt).from(pdfElement).save();
+        }
 
         function downloadPDF() {
             generatePDF();
@@ -524,4 +541,5 @@
         populateModels();
     </script>
 </body>
+<!--// comentario para poder subir cambios!-->
 </html>
