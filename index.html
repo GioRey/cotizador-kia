@@ -11,7 +11,6 @@
     <meta property="og:title" content="COTIZACIÓN TU AUTO KIA AQUÍ">
     <meta property="og:description"
         content="Obtén la cotización de tu auto KIA en segundos. Tasa personalizada, enganche a tu medida y mensualidades al instante.">
-    <!-- Reemplaza la siguiente URL por la imagen pública que quieras que se muestre en WhatsApp -->
     <meta property="og:image" content="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?q=80&w=1000&auto=format&fit=crop">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -25,7 +24,7 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- html2pdf.js CDN para generación e impresión de PDF -->
+    <!-- html2pdf.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -54,8 +53,23 @@
 
 <body class="min-h-screen py-8 px-4 flex flex-col justify-center items-center">
 
-    <!-- Container principal -->
-    <div class="w-full max-w-md space-y-6">
+    <!-- Pantalla de Mantenimiento -->
+    <div id="maintenanceScreen" class="hidden min-h-screen w-full flex flex-col items-center justify-center text-center p-6 space-y-4">
+        <div class="w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center text-red-500 text-2xl shadow-lg">
+            <i class="fa-solid fa-gears"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-white">Estamos en Mantenimiento</h1>
+        <p class="text-xs text-gray-400 max-w-xs">
+            Estamos actualizando nuestros precios y promociones para ofrecerte la mejor información. Por favor, regresa más tarde.
+        </p>
+        <div class="pt-4 text-xs text-zinc-500">
+            <p>KIA MAX SALTILLO</p>
+            <p>Asesor: Abel Ortiz Silva | Cel: 844 806 7192</p>
+        </div>
+    </div>
+
+    <!-- Contenedor Principal del Cotizador -->
+    <div id="appContainer" class="w-full max-w-md space-y-6">
 
         <!-- Header -->
         <div class="text-center space-y-1">
@@ -64,10 +78,10 @@
             <p class="text-xs text-gray-400">Asesor: Abel Ortiz Silva | Cel: 844 806 7192</p>
         </div>
 
-        <!-- Form Card -->
+        <!-- Tarjeta del Formulario -->
         <div class="kia-card p-6 space-y-5 border border-zinc-800">
 
-            <!-- Category Filter (Sin opción "TODOS") -->
+            <!-- Tipo de Vehículo -->
             <div>
                 <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Tipo de Vehículo</label>
                 <select id="categorySelect"
@@ -78,7 +92,7 @@
                 </select>
             </div>
 
-            <!-- Model Dropdown -->
+            <!-- Unidad / Modelo -->
             <div>
                 <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Unidad</label>
                 <select id="modelSelect"
@@ -86,7 +100,7 @@
                 </select>
             </div>
 
-            <!-- Version Dropdown -->
+            <!-- Versión -->
             <div>
                 <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Versión</label>
                 <select id="versionSelect"
@@ -94,41 +108,37 @@
                 </select>
             </div>
 
-            <!-- Vehicle Price Info Box -->
+            <!-- Precio de Lista -->
             <div class="bg-zinc-900 rounded-xl p-3 flex justify-between items-center border border-zinc-800">
                 <span class="text-xs text-gray-400 font-medium">Precio de Lista:</span>
                 <span id="listPrice" class="text-base font-bold text-white">$0.00</span>
             </div>
 
-            <!-- Promo Banner -->
+            <!-- Banner Promocional -->
             <div id="promoBanner"
                 class="hidden bg-red-950/50 border border-red-800/60 rounded-xl p-3 text-xs text-red-300 font-medium flex items-center gap-2">
                 <i class="fa-solid fa-tag text-red-400"></i>
                 <span id="promoText"></span>
             </div>
 
-            <!-- Enganche Input (Solo Importe) -->
+            <!-- Lista Desplegable de Enganches (3 Opciones) -->
             <div>
                 <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Enganche</label>
-                <div class="relative">
-                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white font-bold text-lg">$</span>
-                    <input type="number" id="downPaymentInput"
-                        class="w-full bg-zinc-900 border border-zinc-700 rounded-xl pl-8 pr-4 py-3 text-white font-bold text-xl focus:outline-none focus:ring-2 focus:ring-white"
-                        placeholder="85000">
-                </div>
+                <select id="downPaymentSelect"
+                    class="custom-select w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white font-bold text-base focus:outline-none focus:ring-2 focus:ring-white">
+                </select>
             </div>
 
-            <!-- Tasa Anual Automática (Info) -->
+            <!-- Tasa Anual Automática -->
             <div class="bg-zinc-900 rounded-xl p-3 flex justify-between items-center border border-zinc-800">
                 <span class="text-xs text-gray-400 font-medium">Tasa Anual Estimada:</span>
                 <span id="rateLabel" class="text-xs font-bold text-emerald-400">12.90%</span>
             </div>
 
-            <!-- Monthly Payments List -->
+            <!-- Lista de Mensualidades -->
             <div>
                 <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Mensualidades</label>
                 <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden divide-y divide-zinc-800 shadow-sm">
-
                     <div class="p-3.5 flex justify-between items-center hover:bg-zinc-800/50 transition cursor-pointer">
                         <span class="text-sm font-medium text-gray-300">72 meses</span>
                         <span id="month72" class="text-base font-bold text-white">$0.00</span>
@@ -148,11 +158,10 @@
                         <span class="text-sm font-medium text-gray-300">36 meses</span>
                         <span id="month36" class="text-base font-bold text-white">$0.00</span>
                     </div>
-
                 </div>
             </div>
 
-            <!-- Action Buttons -->
+            <!-- Botones de Acción -->
             <div class="space-y-2 pt-2">
                 <button onclick="openModal()"
                     class="w-full bg-white hover:bg-gray-200 text-black font-semibold py-3.5 rounded-2xl transition duration-200 flex items-center justify-center gap-2 shadow-lg">
@@ -174,7 +183,7 @@
         </div>
     </div>
 
-    <!-- Contact Modal -->
+    <!-- Modal de Contacto -->
     <div id="contactModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl relative">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
@@ -201,7 +210,6 @@
                         placeholder="Ej. 844 123 4567">
                 </div>
 
-                <!-- Resumen previo -->
                 <div class="bg-zinc-800/60 p-3 rounded-xl text-xs space-y-1 text-gray-300 border border-zinc-700/50">
                     <p><strong>Unidad:</strong> <span id="summaryUnit">-</span></p>
                     <p><strong>Versión:</strong> <span id="summaryVersion">-</span></p>
@@ -232,8 +240,23 @@
         </div>
     </div>
 
-    <!-- Data & Script logic -->
+    <!-- Script Logic -->
     <script>
+        const IS_MAINTENANCE = false;
+
+        function checkMaintenanceMode() {
+            const maintenanceScreen = document.getElementById('maintenanceScreen');
+            const appContainer = document.getElementById('appContainer');
+
+            if (IS_MAINTENANCE) {
+                maintenanceScreen.classList.remove('hidden');
+                appContainer.classList.add('hidden');
+            } else {
+                maintenanceScreen.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+            }
+        }
+
         const vehicles = [{ "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "L Standard", "price": 304900, "promo": "Tasa desde 7.99% a 36 Meses" }, { "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "L Autom\u00e1tico", "price": 335500, "promo": "Bono de $15,000 + Tasa 10.84%" }, { "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "LX Standard", "price": 358600, "promo": "Tasa promocional disponible" }, { "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "LX Autom\u00e1tico", "price": 372600, "promo": "Tasa promocional disponible" }, { "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "EX Autom\u00e1tico", "price": 400300, "promo": "Tasa promocional disponible" }, { "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "EX Pack Autom\u00e1tico", "price": 435900, "promo": "Tasa promocional disponible" }, { "model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "LX Standard", "price": 429500, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "LX Autom\u00e1tico", "price": 443500, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "EX Autom\u00e1tico", "price": 487400, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "GT Line Autom\u00e1tico", "price": 520700, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "GT Line Turbo Autom\u00e1tico", "price": 574600, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Hatchback 2027", "category": "AUTOMOVIL", "version": "EX Autom\u00e1tico", "price": 489900, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Hatchback 2027", "category": "AUTOMOVIL", "version": "GT Line Autom\u00e1tico", "price": 528900, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Hatchback 2027", "category": "AUTOMOVIL", "version": "GT Line Turbo Autom\u00e1tico", "price": 581200, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "Sonet SUV 2027", "category": "SUV", "version": "LX Standard", "price": 398400, "promo": "Tasa desde 10.84% a 60 Meses" }, { "model": "Sonet SUV 2027", "category": "SUV", "version": "LX Autom\u00e1tica", "price": 411900, "promo": "Tasa desde 10.84% a 60 Meses" }, { "model": "Sonet SUV 2027", "category": "SUV", "version": "EX Autom\u00e1tica", "price": 433000, "promo": "Tasa desde 10.84% a 60 Meses" }, { "model": "Sonet SUV 2027", "category": "SUV", "version": "SX Autom\u00e1tica", "price": 475900, "promo": "Tasa desde 10.84% a 60 Meses" }, { "model": "Seltos SUV 2026", "category": "SUV", "version": "EX Autom\u00e1tico", "price": 470900, "promo": "Bono de $35,000 + Tasa 10.84%" }, { "model": "Seltos SUV 2026", "category": "SUV", "version": "EX Pack Autom\u00e1tico", "price": 528900, "promo": "Bono de $35,000 disponible" }, { "model": "Seltos SUV 2026", "category": "SUV", "version": "SX Autom\u00e1tico", "price": 551900, "promo": "Bono de $35,000 disponible" }, { "model": "Seltos SUV 2026", "category": "SUV", "version": "GT Line Autom\u00e1tico", "price": 587900, "promo": "Bono de $35,000 disponible" }, { "model": "Sportage SUV 2027", "category": "SUV", "version": "EX Autom\u00e1tica", "price": 647900, "promo": "Bono de $15,000 + Tasa desde 10.84%" }, { "model": "Sportage SUV 2027", "category": "SUV", "version": "EX Pack Autom\u00e1tico", "price": 706900, "promo": "Bono de $15,000 disponible" }, { "model": "Sportage SUV 2027", "category": "SUV", "version": "SXL Autom\u00e1tico", "price": 766900, "promo": "Bono de $15,000 disponible" }, { "model": "Sportage SUV H\u00edbrida 2026", "category": "HIBRIDO O ELECTRICO", "version": "EX Pack Autom\u00e1tica", "price": 799900, "promo": "Bono de $20,000 + Tasa desde 10.84%" }, { "model": "Sportage SUV H\u00edbrida 2026", "category": "HIBRIDO O ELECTRICO", "version": "X Line Autom\u00e1tico", "price": 893200, "promo": "Bono de $20,000 disponible" }, { "model": "Sportage SUV H\u00edbrida 2026", "category": "HIBRIDO O ELECTRICO", "version": "X Line Terra Autom\u00e1tico", "price": 894200, "promo": "Bono de $20,000 disponible" }, { "model": "Sorento SUV 2026", "category": "SUV", "version": "EX Autom\u00e1tica", "price": 833200, "promo": "Bono de $60,000 + Tasa desde 10.84%" }, { "model": "Sorento SUV 2026", "category": "SUV", "version": "EX Pack Autom\u00e1tico", "price": 897600, "promo": "Bono de $60,000 disponible" }, { "model": "Sorento SUV 2026", "category": "SUV", "version": "SXL Autom\u00e1tico", "price": 992900, "promo": "Bono de $60,000 disponible" }];
         const advisorEmail = "abel.ortiz@kiamax.com.mx";
         const advisorPhone = "528448067192";
@@ -242,13 +265,13 @@
         const modelSelect = document.getElementById('modelSelect');
         const versionSelect = document.getElementById('versionSelect');
         const listPriceEl = document.getElementById('listPrice');
-        const downPaymentInput = document.getElementById('downPaymentInput');
+        const downPaymentSelect = document.getElementById('downPaymentSelect');
         const rateLabel = document.getElementById('rateLabel');
         const promoBanner = document.getElementById('promoBanner');
         const promoText = document.getElementById('promoText');
 
         let currentPrice = 0;
-        let currentRate = 0.129; // Tasa por defecto (12.90%)
+        let currentRate = 0.129;
 
         function formatCurrency(num) {
             return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(num);
@@ -287,18 +310,30 @@
             updateQuote();
         }
 
+        // Genera exactamente 3 opciones de enganche según el precio de la unidad
+        function populateDownPaymentOptions() {
+            downPaymentSelect.innerHTML = '';
+            const percentages = [0.20, 0.30, 0.40]; // 3 enganches: 20%, 30% y 40%
+
+            percentages.forEach(pct => {
+                const amount = Math.round(currentPrice * pct);
+                const opt = document.createElement('option');
+                opt.value = amount;
+                opt.textContent = `${formatCurrency(amount)}`;
+                downPaymentSelect.appendChild(opt);
+            });
+        }
+
         function calculatePayments() {
             const price = currentPrice;
-            let enganche = parseFloat(downPaymentInput.value) || 0;
-            if (enganche >= price) enganche = price * 0.9;
+            let enganche = parseFloat(downPaymentSelect.value) || 0;
 
             const loanAmount = price - enganche;
             const monthlyRate = currentRate / 12;
 
             function getMonthly(months) {
                 if (loanAmount <= 0) return 0;
-                const payment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
-                return payment;
+                return (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
             }
 
             document.getElementById('month72').textContent = formatCurrency(getMonthly(72));
@@ -316,9 +351,8 @@
                 currentPrice = item.price;
                 listPriceEl.textContent = formatCurrency(item.price);
 
-                if (!downPaymentInput.value || downPaymentInput.dataset.manual !== "true") {
-                    downPaymentInput.value = Math.round(item.price * 0.20);
-                }
+                // Cargar las 3 opciones de enganche
+                populateDownPaymentOptions();
 
                 // Detección automática de la tasa según promoción del auto
                 if (item.promo && item.promo.includes('7.99%')) {
@@ -328,7 +362,7 @@
                 } else if (item.promo && item.promo.includes('10.84%')) {
                     currentRate = 0.1084;
                 } else {
-                    currentRate = 0.129; // Tasa preferencial estándar
+                    currentRate = 0.129;
                 }
 
                 rateLabel.textContent = `${(currentRate * 100).toFixed(2)}% (Especial)`;
@@ -347,16 +381,13 @@
         categorySelect.addEventListener('change', populateModels);
         modelSelect.addEventListener('change', populateVersions);
         versionSelect.addEventListener('change', updateQuote);
-        downPaymentInput.addEventListener('input', () => {
-            downPaymentInput.dataset.manual = "true";
-            calculatePayments();
-        });
+        downPaymentSelect.addEventListener('change', calculatePayments);
 
-        // Modal Functions
+        // Funciones del Modal
         function openModal() {
             document.getElementById('summaryUnit').textContent = modelSelect.value;
             document.getElementById('summaryVersion').textContent = versionSelect.value;
-            document.getElementById('summaryEnganche').textContent = formatCurrency(parseFloat(downPaymentInput.value) || 0);
+            document.getElementById('summaryEnganche').textContent = formatCurrency(parseFloat(downPaymentSelect.value) || 0);
             document.getElementById('summaryMonthly').textContent = document.getElementById('month48').textContent;
 
             document.getElementById('contactModal').classList.remove('hidden');
@@ -372,7 +403,7 @@
             const unit = modelSelect.value;
             const ver = versionSelect.value;
             const price = formatCurrency(currentPrice);
-            const eng = formatCurrency(parseFloat(downPaymentInput.value) || 0);
+            const eng = formatCurrency(parseFloat(downPaymentSelect.value) || 0);
             const m72 = document.getElementById('month72').textContent;
             const m60 = document.getElementById('month60').textContent;
             const m48 = document.getElementById('month48').textContent;
@@ -402,14 +433,14 @@
             window.open(`mailto:${advisorEmail}?subject=${subject}&body=${text}`, '_blank');
         }
 
-        // --- FUNCIÓN PARA GENERAR Y DESCARGAR EL PDF ---
+        // Generación de PDF
         function generatePDF() {
             const clientName = document.getElementById('clientName').value || 'Cliente';
             const clientPhone = document.getElementById('clientPhone').value || 'N/A';
             const unit = modelSelect.value;
             const ver = versionSelect.value;
             const price = formatCurrency(currentPrice);
-            const eng = formatCurrency(parseFloat(downPaymentInput.value) || 0);
+            const eng = formatCurrency(parseFloat(downPaymentSelect.value) || 0);
             const promo = promoBanner.classList.contains('hidden') ? '' : promoText.textContent;
             const rate = rateLabel.textContent;
 
@@ -537,9 +568,11 @@
             generatePDF();
         }
 
-        // Initialize on load
-        populateModels();
+        checkMaintenanceMode();
+        if (!IS_MAINTENANCE) {
+            populateModels();
+        }
     </script>
 </body>
-<!--// comentario para poder subir cambios!-->
+
 </html>
