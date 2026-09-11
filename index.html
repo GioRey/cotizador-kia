@@ -277,103 +277,129 @@
             return "AUTOMÓVIL";
         }
 
-        // LECTOR DE LA PESTAÑA 'COTIZACIONES'
-        async function fetchQuotesFromSheets() {
-            try {
-                const response = await fetch(GOOGLE_SHEETS_CSV_URL);
-                const csvData = await response.text();
+        function setMaintenanceView(isMaintenance) {
+                const maintenanceScreen = document.getElementById('maintenanceScreen');
+                const appContainer = document.getElementById('appContainer');
 
-                Papa.parse(csvData, {
-                    header: false,
-                    skipEmptyLines: true,
-                    complete: function (results) {
-                        const rows = results.data;
-                        let colModel = -1, colVer = -1, colTasa = -1, colEng = -1, colPlazo = -1, colMens = -1;
-                        let headerFound = false;
+                if (isMaintenance) {
+                    maintenanceScreen.classList.remove('hidden');
+                    appContainer.classList.add('hidden');
+                } else {
+                    maintenanceScreen.classList.add('hidden');
+                    appContainer.classList.remove('hidden');
+                }
+            }
+        // LECTOR DE LA PESTAÑA 'COTIZACIONES' Y DE LA COLUMNA 'MANTENIMIENTO'
+            async function fetchQuotesFromSheets() {
+                try {
+                    const response = await fetch(GOOGLE_SHEETS_CSV_URL);
+                    const csvData = await response.text();
 
-                        let currentModel = "";
-                        let currentVersion = "";
-                        let currentTasa = 0.1299;
-                        let currentEnganche = 0;
+                    Papa.parse(csvData, {
+                        header: false,
+                        skipEmptyLines: true,
+                        complete: function (results) {
+                            const rows = results.data;
+                            let colModel = -1, colVer = -1, colTasa = -1, colEng = -1, colPlazo = -1, colMens = -1, colMantenimiento = -1;
+                            let headerFound = false;
 
-                        quotesData = {};
+                            let currentModel = "";
+                            let currentVersion = "";
+                            let currentTasa = 0.1299;
+                            let currentEnganche = 0;
+                            let isSiteInMaintenance = false;
 
-                        for (let i = 0; i < rows.length; i++) {
-                            const r = rows[i].map(c => (c || '').toString().trim());
-                            const rowStr = r.join(' ').toUpperCase();
+                            quotesData = {};
 
-                            // 1. Detectar encabezados
-                            if (!headerFound) {
-                                if (rowStr.includes("COTIZACIONES") && rowStr.includes("VERSION") && rowStr.includes("PLAZO")) {
-                                    headerFound = true;
-                                    r.forEach((cell, idx) => {
-                                        const cUpper = cell.toUpperCase();
-                                        if (cUpper.includes("COTIZACIONES") || cUpper.includes("UNIDAD") || cUpper.includes("MODELO")) colModel = idx;
-                                        else if (cUpper.includes("VERSION")) colVer = idx;
-                                        else if (cUpper.includes("TASA")) colTasa = idx;
-                                        else if (cUpper.includes("ENGANCHE")) colEng = idx;
-                                        else if (cUpper.includes("PLAZO")) colPlazo = idx;
-                                        else if (cUpper.includes("MENSUALIDAD")) colMens = idx;
-                                    });
-                                    continue;
+                            for (let i = 0; i < rows.length; i++) {
+                                const r = rows[i].map(c => (c || '').toString().trim());
+                                const rowStr = r.join(' ').toUpperCase();
+
+                                // 1. Detectar fila de encabezados
+                                if (!headerFound) {
+                                    if (rowStr.includes("COTIZACIONES") && rowStr.includes("VERSION") && rowStr.includes("PLAZO")) {
+                                        headerFound = true;
+                                        r.forEach((cell, idx) => {
+                                            const cUpper = cell.toUpperCase();
+                                            if (cUpper.includes("COTIZACIONES") || cUpper.includes("UNIDAD") || cUpper.includes("MODELO")) colModel = idx;
+                                            else if (cUpper.includes("VERSION")) colVer = idx;
+                                            else if (cUpper.includes("TASA")) colTasa = idx;
+                                            else if (cUpper.includes("ENGANCHE")) colEng = idx;
+                                            else if (cUpper.includes("PLAZO")) colPlazo = idx;
+                                            else if (cUpper.includes("MENSUALIDAD")) colMens = idx;
+                                            else if (cUpper.includes("MANTENIMIENTO")) colMantenimiento = idx;
+                                        });
+                                        continue;
+                                    }
+                                }
+
+                                // 2. Procesar filas y estado de mantenimiento
+                                if (headerFound) {
+                                    if (colMantenimiento !== -1 && r[colMantenimiento]) {
+                                        const mantVal = r[colMantenimiento].toLowerCase();
+                                        if (mantVal === 'si' || mantVal === 'sí') {
+                                            isSiteInMaintenance = true;
+                                        }
+                                    }
+
+                                    const valModel = colModel !== -1 ? r[colModel] : "";
+                                    const valVer = colVer !== -1 ? r[colVer] : "";
+                                    const valTasa = colTasa !== -1 ? r[colTasa] : "";
+                                    const valEng = colEng !== -1 ? r[colEng] : "";
+                                    const valPlazo = colPlazo !== -1 ? r[colPlazo] : "";
+                                    const valMens = colMens !== -1 ? r[colMens] : "";
+
+                                    if (valModel !== "") currentModel = valModel;
+                                    if (valVer !== "") currentVersion = valVer;
+
+                                    if (valTasa !== "") {
+                                        const parsedTasa = parseFloat(valTasa.replace(/[^0-9.]/g, ''));
+                                        if (!isNaN(parsedTasa)) currentTasa = parsedTasa;
+                                    }
+
+                                    if (valEng !== "") {
+                                        const parsedEng = parseFloat(valEng.replace(/[^0-9.]/g, ''));
+                                        if (!isNaN(parsedEng)) currentEnganche = parsedEng;
+                                    }
+
+                                    const plazoNum = parseInt(valPlazo.replace(/[^0-9]/g, ''));
+                                    const mensNum = parseFloat(valMens.replace(/[^0-9.]/g, ''));
+
+                                    if (!currentModel || !currentVersion || !currentEnganche || isNaN(plazoNum) || isNaN(mensNum)) {
+                                        continue;
+                                    }
+
+                                    const category = getCategory(currentModel);
+
+                                    if (!quotesData[category]) quotesData[category] = {};
+                                    if (!quotesData[category][currentModel]) quotesData[category][currentModel] = {};
+                                    if (!quotesData[category][currentModel][currentVersion]) {
+                                        quotesData[category][currentModel][currentVersion] = {
+                                            tasa: currentTasa,
+                                            enganches: {}
+                                        };
+                                    }
+
+                                    if (!quotesData[category][currentModel][currentVersion].enganches[currentEnganche]) {
+                                        quotesData[category][currentModel][currentVersion].enganches[currentEnganche] = {};
+                                    }
+
+                                    quotesData[category][currentModel][currentVersion].enganches[currentEnganche][plazoNum] = mensNum;
                                 }
                             }
 
-                            // 2. Procesar filas de datos
-                            if (headerFound) {
-                                const valModel = colModel !== -1 ? r[colModel] : "";
-                                const valVer = colVer !== -1 ? r[colVer] : "";
-                                const valTasa = colTasa !== -1 ? r[colTasa] : "";
-                                const valEng = colEng !== -1 ? r[colEng] : "";
-                                const valPlazo = colPlazo !== -1 ? r[colPlazo] : "";
-                                const valMens = colMens !== -1 ? r[colMens] : "";
+                            // Activa o desactiva la vista según el valor de mantenimiento
+                            setMaintenanceView(isSiteInMaintenance);
 
-                                if (valModel !== "") currentModel = valModel;
-                                if (valVer !== "") currentVersion = valVer;
-
-                                if (valTasa !== "") {
-                                    const parsedTasa = parseFloat(valTasa.replace(/[^0-9.]/g, ''));
-                                    if (!isNaN(parsedTasa)) currentTasa = parsedTasa;
-                                }
-
-                                if (valEng !== "") {
-                                    const parsedEng = parseFloat(valEng.replace(/[^0-9.]/g, ''));
-                                    if (!isNaN(parsedEng)) currentEnganche = parsedEng;
-                                }
-
-                                const plazoNum = parseInt(valPlazo.replace(/[^0-9]/g, ''));
-                                const mensNum = parseFloat(valMens.replace(/[^0-9.]/g, ''));
-
-                                if (!currentModel || !currentVersion || !currentEnganche || isNaN(plazoNum) || isNaN(mensNum)) {
-                                    continue;
-                                }
-
-                                const category = getCategory(currentModel);
-
-                                if (!quotesData[category]) quotesData[category] = {};
-                                if (!quotesData[category][currentModel]) quotesData[category][currentModel] = {};
-                                if (!quotesData[category][currentModel][currentVersion]) {
-                                    quotesData[category][currentModel][currentVersion] = {
-                                        tasa: currentTasa,
-                                        enganches: {}
-                                    };
-                                }
-
-                                if (!quotesData[category][currentModel][currentVersion].enganches[currentEnganche]) {
-                                    quotesData[category][currentModel][currentVersion].enganches[currentEnganche] = {};
-                                }
-
-                                quotesData[category][currentModel][currentVersion].enganches[currentEnganche][plazoNum] = mensNum;
+                            if (!isSiteInMaintenance) {
+                                populateCategories();
                             }
                         }
-
-                        populateCategories();
-                    }
-                });
-            } catch (error) {
-                console.error("Error al leer la pestaña COTIZACIONES:", error);
+                    });
+                } catch (error) {
+                    console.error("Error al leer la pestaña COTIZACIONES:", error);
+                }
             }
-        }
 
         function populateCategories() {
             const categories = Object.keys(quotesData);
@@ -639,10 +665,10 @@
             generatePDF();
         }
 
-        checkMaintenanceMode();
-        if (!IS_MAINTENANCE) {
+        // checkMaintenanceMode();
+        // if (!IS_MAINTENANCE) {
             fetchQuotesFromSheets();
-        }
+        // }
     </script>
 </body>
 
