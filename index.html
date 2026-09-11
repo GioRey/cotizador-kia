@@ -11,7 +11,8 @@
     <meta property="og:title" content="COTIZACIÓN TU AUTO KIA AQUÍ">
     <meta property="og:description"
         content="Obtén la cotización de tu auto KIA en segundos. Tasa personalizada, enganche a tu medida y mensualidades al instante.">
-    <meta property="og:image" content="https://giorey.github.io/cotizador-kia/kia_logo.jpg">
+    <!-- Reemplaza con tu URL pública de GitHub Pages -->
+    <meta property="og:image" content="https://tu-usuario.github.io/tu-repositorio/kia_logo.jpg">
     <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -19,14 +20,14 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="COTIZACIÓN TU AUTO KIA AQUÍ">
     <meta name="twitter:description" content="Obtén la cotización de tu auto KIA en segundos.">
-    <meta name="twitter:image" content="https://giorey.github.io/cotizador-kia/kia_logo.jpg">
+    <meta name="twitter:image" content="https://tu-usuario.github.io/tu-repositorio/kia_logo.jpg">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- html2pdf.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- PapaParse CDN para leer la hoja en tiempo real -->
+    <!-- PapaParse CDN para leer la pestaña COTIZACIONES en tiempo real -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
     <style>
@@ -84,7 +85,7 @@
         <!-- Tarjeta del Formulario -->
         <div class="kia-card p-6 space-y-5 border border-zinc-800">
 
-            <!-- Tipo de Vehículo (Sin opción TODOS) -->
+            <!-- Tipo de Vehículo -->
             <div>
                 <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Tipo de Vehículo</label>
                 <select id="categorySelect"
@@ -108,20 +109,7 @@
                 </select>
             </div>
 
-            <!-- Precio de Lista -->
-            <div class="bg-zinc-900 rounded-xl p-3 flex justify-between items-center border border-zinc-800">
-                <span class="text-xs text-gray-400 font-medium">Precio de Lista:</span>
-                <span id="listPrice" class="text-base font-bold text-white">$0.00</span>
-            </div>
-
-            <!-- Banner Promocional -->
-            <div id="promoBanner"
-                class="hidden bg-red-950/50 border border-red-800/60 rounded-xl p-3 text-xs text-red-300 font-medium flex items-center gap-2">
-                <i class="fa-solid fa-tag text-red-400"></i>
-                <span id="promoText"></span>
-            </div>
-
-            <!-- Lista Desplegable de 3 Enganches -->
+            <!-- Lista Desplegable de los 3 Enganches del Excel -->
             <div>
                 <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Enganche</label>
                 <select id="downPaymentSelect"
@@ -129,13 +117,13 @@
                 </select>
             </div>
 
-            <!-- Tasa Anual Automática -->
+            <!-- Tasa Anual Automática obtenida del Excel -->
             <div class="bg-zinc-900 rounded-xl p-3 flex justify-between items-center border border-zinc-800">
-                <span class="text-xs text-gray-400 font-medium">Tasa Anual Estimada:</span>
-                <span id="rateLabel" class="text-xs font-bold text-emerald-400">12.90%</span>
+                <span class="text-xs text-gray-400 font-medium">Tasa Anual Aplicada:</span>
+                <span id="rateLabel" class="text-xs font-bold text-emerald-400">12.99%</span>
             </div>
 
-            <!-- Lista de Mensualidades -->
+            <!-- Lista de Mensualidades Reales -->
             <div>
                 <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Mensualidades</label>
                 <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden divide-y divide-zinc-800 shadow-sm">
@@ -179,7 +167,7 @@
         </div>
 
         <div class="text-center">
-            <p class="text-[10px] text-gray-500">Precios y promociones válidos sujeto a cambios. KIA MAX Saltillo.</p>
+            <p class="text-[10px] text-gray-500">Precios y mensualidades sujetos a aprobación de crédito. KIA MAX Saltillo.</p>
         </div>
     </div>
 
@@ -240,15 +228,16 @@
         </div>
     </div>
 
-    <!-- Lógica del Cotizador -->
+    <!-- Script Logic -->
     <script>
         const IS_MAINTENANCE = false;
 
-        // URL de tu Google Sheets apuntando específicamente a la hoja 'LISTA DE PRECIOS'
-        const SPREADSHEET_ID = "1ed2SOQ9ZZHzuY_T94Wrq9ycqqwdMUrV4ktYQS2liq_4";
-        const GOOGLE_SHEETS_CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=LISTA%20DE%20PRECIOS`;
+        // ID de tu Google Sheets apuntando específicamente a la pestaña COTIZACIONES
+        const SPREADSHEET_ID = "1GqRItvqCd9CJOVg_bEsA1z4pnu0VfsbG";
+        const GOOGLE_SHEETS_CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=COTIZACIONES`;
 
-        let vehicles = [];
+        // Almacén estructurado por [categoría][modelo][versión] -> { tasa, enganches: { [monto]: { 72: x, 60: y, 48: z, 36: w } } }
+        let quotesData = {};
 
         function checkMaintenanceMode() {
             const maintenanceScreen = document.getElementById('maintenanceScreen');
@@ -269,109 +258,123 @@
         const categorySelect = document.getElementById('categorySelect');
         const modelSelect = document.getElementById('modelSelect');
         const versionSelect = document.getElementById('versionSelect');
-        const listPriceEl = document.getElementById('listPrice');
         const downPaymentSelect = document.getElementById('downPaymentSelect');
         const rateLabel = document.getElementById('rateLabel');
-        const promoBanner = document.getElementById('promoBanner');
-        const promoText = document.getElementById('promoText');
-
-        let currentPrice = 0;
-        let currentRate = 0.129;
 
         function formatCurrency(num) {
             return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(num);
         }
 
-        // LECTOR INTELIGENTE PARA LA ESTRUCTURA EXACTA DEL EXCEL DE KIA
-        async function fetchVehiclesFromSheets() {
+        function getCategory(modelName) {
+            const m = modelName.toUpperCase();
+            if (m.includes("HIBRID") || m.includes("HÍBRID") || m.includes("ELECTR") || m.includes("SELTOS-HEV") || m.includes("SPORTAGE-HEV") || m.includes("EV3") || m.includes("NIRO")) {
+                return "HÍBRIDO / ELÉCTRICO";
+            } else if (m.includes("SUV") || m.includes("SONET") || m.includes("SELTOS") || m.includes("SPORTAGE") || m.includes("SORENTO") || m.includes("TELLURIDE")) {
+                return "SUV";
+            }
+            return "AUTOMÓVIL";
+        }
+
+        // LECTOR DE LA PESTAÑA 'COTIZACIONES'
+        async function fetchQuotesFromSheets() {
             try {
                 const response = await fetch(GOOGLE_SHEETS_CSV_URL);
                 const csvData = await response.text();
 
                 Papa.parse(csvData, {
-                    header: false, // Leemos filas brutas para buscar encabezados
+                    header: false,
                     skipEmptyLines: true,
                     complete: function (results) {
                         const rows = results.data;
+                        let colModel = -1, colVer = -1, colTasa = -1, colEng = -1, colPlazo = -1, colMens = -1;
                         let headerFound = false;
-                        let colUnidad = -1, colVersion = -1, colTrans = -1, colPrecio = -1, colPromo = -1;
-                        let currentUnit = "";
-                        let currentUnitPromo = "";
-                        const parsedVehicles = [];
+
+                        let currentModel = "";
+                        let currentVersion = "";
+                        let currentTasa = 0.1299;
+                        let currentEnganche = 0;
+
+                        quotesData = {};
 
                         for (let i = 0; i < rows.length; i++) {
-                            const row = rows[i].map(c => (c || '').toString().trim());
-                            const rowStr = row.join(' ').toUpperCase();
+                            const r = rows[i].map(c => (c || '').toString().trim());
+                            const rowStr = r.join(' ').toUpperCase();
 
-                            // 1. Detectar la fila de encabezados reales
+                            // 1. Detectar encabezados
                             if (!headerFound) {
-                                if (rowStr.includes("UNIDAD") && rowStr.includes("VERSION")) {
+                                if (rowStr.includes("COTIZACIONES") && rowStr.includes("VERSION") && rowStr.includes("PLAZO")) {
                                     headerFound = true;
-                                    row.forEach((cell, idx) => {
+                                    r.forEach((cell, idx) => {
                                         const cUpper = cell.toUpperCase();
-                                        if (cUpper.includes("UNIDAD")) colUnidad = idx;
-                                        else if (cUpper.includes("VERSION")) colVersion = idx;
-                                        else if (cUpper.includes("TRANSMISION")) colTrans = idx;
-                                        else if (cUpper.includes("PRECIO")) colPrecio = idx;
-                                        else if (cUpper.includes("OFERTA") || cUpper.includes("PROMO")) colPromo = idx;
+                                        if (cUpper.includes("COTIZACIONES") || cUpper.includes("UNIDAD") || cUpper.includes("MODELO")) colModel = idx;
+                                        else if (cUpper.includes("VERSION")) colVer = idx;
+                                        else if (cUpper.includes("TASA")) colTasa = idx;
+                                        else if (cUpper.includes("ENGANCHE")) colEng = idx;
+                                        else if (cUpper.includes("PLAZO")) colPlazo = idx;
+                                        else if (cUpper.includes("MENSUALIDAD")) colMens = idx;
                                     });
                                     continue;
                                 }
                             }
 
-                            // 2. Procesar filas de autos una vez localizadas las columnas
+                            // 2. Procesar filas de datos
                             if (headerFound) {
-                                const valUnidad = colUnidad !== -1 ? row[colUnidad] : "";
-                                if (valUnidad !== "") {
-                                    currentUnit = valUnidad;
-                                    currentUnitPromo = colPromo !== -1 ? row[colPromo] : "";
+                                const valModel = colModel !== -1 ? r[colModel] : "";
+                                const valVer = colVer !== -1 ? r[colVer] : "";
+                                const valTasa = colTasa !== -1 ? r[colTasa] : "";
+                                const valEng = colEng !== -1 ? r[colEng] : "";
+                                const valPlazo = colPlazo !== -1 ? r[colPlazo] : "";
+                                const valMens = colMens !== -1 ? r[colMens] : "";
+
+                                if (valModel !== "") currentModel = valModel;
+                                if (valVer !== "") currentVersion = valVer;
+
+                                if (valTasa !== "") {
+                                    const parsedTasa = parseFloat(valTasa.replace(/[^0-9.]/g, ''));
+                                    if (!isNaN(parsedTasa)) currentTasa = parsedTasa;
                                 }
 
-                                const valVersion = colVersion !== -1 ? row[colVersion] : "";
-                                const valTrans = colTrans !== -1 ? row[colTrans] : "";
-                                const valPrecio = colPrecio !== -1 ? row[colPrecio] : "";
-                                const valPromo = colPromo !== -1 ? row[colPromo] : "";
-
-                                // Limpiar precio
-                                const cleanPrice = parseFloat(valPrecio.replace(/[^0-9.]/g, ''));
-                                if (!cleanPrice || isNaN(cleanPrice) || !valVersion) continue;
-
-                                // Determinar categoría automáticamente
-                                const unitUpper = currentUnit.toUpperCase();
-                                let category = "AUTOMÓVIL";
-                                if (unitUpper.includes("HIBRID") || unitUpper.includes("HÍBRID") || unitUpper.includes("ELECTR")) {
-                                    category = "HÍBRIDO / ELÉCTRICO";
-                                } else if (unitUpper.includes("SUV") || unitUpper.includes("SONET") || unitUpper.includes("SELTOS") || unitUpper.includes("SPORTAGE") || unitUpper.includes("SORENTO")) {
-                                    category = "SUV";
+                                if (valEng !== "") {
+                                    const parsedEng = parseFloat(valEng.replace(/[^0-9.]/g, ''));
+                                    if (!isNaN(parsedEng)) currentEnganche = parsedEng;
                                 }
 
-                                const fullVersion = (valVersion + " " + valTrans).trim();
-                                const finalPromo = valPromo !== "" ? valPromo : currentUnitPromo;
+                                const plazoNum = parseInt(valPlazo.replace(/[^0-9]/g, ''));
+                                const mensNum = parseFloat(valMens.replace(/[^0-9.]/g, ''));
 
-                                parsedVehicles.push({
-                                    category: category,
-                                    model: currentUnit,
-                                    version: fullVersion,
-                                    price: cleanPrice,
-                                    promo: finalPromo
-                                });
+                                if (!currentModel || !currentVersion || !currentEnganche || isNaN(plazoNum) || isNaN(mensNum)) {
+                                    continue;
+                                }
+
+                                const category = getCategory(currentModel);
+
+                                if (!quotesData[category]) quotesData[category] = {};
+                                if (!quotesData[category][currentModel]) quotesData[category][currentModel] = {};
+                                if (!quotesData[category][currentModel][currentVersion]) {
+                                    quotesData[category][currentModel][currentVersion] = {
+                                        tasa: currentTasa,
+                                        enganches: {}
+                                    };
+                                }
+
+                                if (!quotesData[category][currentModel][currentVersion].enganches[currentEnganche]) {
+                                    quotesData[category][currentModel][currentVersion].enganches[currentEnganche] = {};
+                                }
+
+                                quotesData[category][currentModel][currentVersion].enganches[currentEnganche][plazoNum] = mensNum;
                             }
                         }
 
-                        if (parsedVehicles.length > 0) {
-                            vehicles = parsedVehicles;
-                            populateCategories();
-                            populateModels();
-                        }
+                        populateCategories();
                     }
                 });
             } catch (error) {
-                console.error("Error al cargar la hoja:", error);
+                console.error("Error al leer la pestaña COTIZACIONES:", error);
             }
         }
 
         function populateCategories() {
-            const categories = [...new Set(vehicles.map(v => v.category))];
+            const categories = Object.keys(quotesData);
             categorySelect.innerHTML = '';
             categories.forEach(cat => {
                 const opt = document.createElement('option');
@@ -379,111 +382,91 @@
                 opt.textContent = cat;
                 categorySelect.appendChild(opt);
             });
+
+            populateModels();
         }
 
         function populateModels() {
             const cat = categorySelect.value;
             modelSelect.innerHTML = '';
 
-            const models = [...new Set(vehicles
-                .filter(v => v.category === cat)
-                .map(v => v.model))];
-
-            models.forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m;
-                opt.textContent = m;
-                modelSelect.appendChild(opt);
-            });
+            if (quotesData[cat]) {
+                const models = Object.keys(quotesData[cat]);
+                models.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m;
+                    opt.textContent = m;
+                    modelSelect.appendChild(opt);
+                });
+            }
 
             populateVersions();
         }
 
         function populateVersions() {
-            const selectedModel = modelSelect.value;
+            const cat = categorySelect.value;
+            const model = modelSelect.value;
             versionSelect.innerHTML = '';
 
-            const filtered = vehicles.filter(v => v.model === selectedModel);
-            filtered.forEach(v => {
-                const opt = document.createElement('option');
-                opt.value = v.version;
-                opt.textContent = v.version;
-                versionSelect.appendChild(opt);
-            });
-
-            updateQuote();
-        }
-
-        function populateDownPaymentOptions() {
-            downPaymentSelect.innerHTML = '';
-            const percentages = [0.20, 0.30, 0.40]; // 20%, 30% y 40%
-
-            percentages.forEach(pct => {
-                const amount = Math.round(currentPrice * pct);
-                const opt = document.createElement('option');
-                opt.value = amount;
-                opt.textContent = `${formatCurrency(amount)} (${pct * 100}%)`;
-                downPaymentSelect.appendChild(opt);
-            });
-        }
-
-        function calculatePayments() {
-            const price = currentPrice;
-            let enganche = parseFloat(downPaymentSelect.value) || 0;
-
-            const loanAmount = price - enganche;
-            const monthlyRate = currentRate / 12;
-
-            function getMonthly(months) {
-                if (loanAmount <= 0) return 0;
-                return (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
+            if (quotesData[cat] && quotesData[cat][model]) {
+                const versions = Object.keys(quotesData[cat][model]);
+                versions.forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = v;
+                    opt.textContent = v;
+                    versionSelect.appendChild(opt);
+                });
             }
 
-            document.getElementById('month72').textContent = formatCurrency(getMonthly(72));
-            document.getElementById('month60').textContent = formatCurrency(getMonthly(60));
-            document.getElementById('month48').textContent = formatCurrency(getMonthly(48));
-            document.getElementById('month36').textContent = formatCurrency(getMonthly(36));
+            populateDownPayments();
         }
 
-        function updateQuote() {
-            const m = modelSelect.value;
-            const v = versionSelect.value;
-            const item = vehicles.find(x => x.model === m && x.version === v);
+        function populateDownPayments() {
+            const cat = categorySelect.value;
+            const model = modelSelect.value;
+            const ver = versionSelect.value;
+            downPaymentSelect.innerHTML = '';
 
-            if (item) {
-                currentPrice = item.price;
-                listPriceEl.textContent = formatCurrency(item.price);
+            if (quotesData[cat] && quotesData[cat][model] && quotesData[cat][model][ver]) {
+                const versionObj = quotesData[cat][model][ver];
 
-                populateDownPaymentOptions();
+                // Actualizar tasa automática
+                const tasaVal = versionObj.tasa < 1 ? versionObj.tasa * 100 : versionObj.tasa;
+                rateLabel.textContent = `${tasaVal.toFixed(2)}%`;
 
-                // Asignación automática de tasa según promociones
-                if (item.promo && item.promo.includes('7.99%')) {
-                    currentRate = 0.0799;
-                } else if (item.promo && item.promo.includes('8.99%')) {
-                    currentRate = 0.0899;
-                } else if (item.promo && item.promo.includes('10.84%')) {
-                    currentRate = 0.1084;
-                } else {
-                    currentRate = 0.129;
-                }
+                // Cargar los enganches reales del Excel
+                const enganches = Object.keys(versionObj.enganches).map(Number).sort((a, b) => a - b);
+                enganches.forEach(eng => {
+                    const opt = document.createElement('option');
+                    opt.value = eng;
+                    opt.textContent = formatCurrency(eng);
+                    downPaymentSelect.appendChild(opt);
+                });
+            }
 
-                rateLabel.textContent = `${(currentRate * 100).toFixed(2)}% (Especial)`;
+            updateMonthlyPayments();
+        }
 
-                if (item.promo) {
-                    promoBanner.classList.remove('hidden');
-                    promoText.textContent = item.promo;
-                } else {
-                    promoBanner.classList.add('hidden');
-                }
+        function updateMonthlyPayments() {
+            const cat = categorySelect.value;
+            const model = modelSelect.value;
+            const ver = versionSelect.value;
+            const eng = parseFloat(downPaymentSelect.value);
 
-                calculatePayments();
+            if (quotesData[cat] && quotesData[cat][model] && quotesData[cat][model][ver]) {
+                const plazos = quotesData[cat][model][ver].enganches[eng] || {};
+
+                document.getElementById('month72').textContent = formatCurrency(plazos[72] || 0);
+                document.getElementById('month60').textContent = formatCurrency(plazos[60] || 0);
+                document.getElementById('month48').textContent = formatCurrency(plazos[48] || 0);
+                document.getElementById('month36').textContent = formatCurrency(plazos[36] || 0);
             }
         }
 
         categorySelect.addEventListener('change', populateModels);
         modelSelect.addEventListener('change', populateVersions);
-        versionSelect.addEventListener('change', updateQuote);
-        downPaymentSelect.addEventListener('change', calculatePayments);
+        versionSelect.addEventListener('change', populateDownPayments);
+        downPaymentSelect.addEventListener('change', updateMonthlyPayments);
 
         function openModal() {
             document.getElementById('summaryUnit').textContent = modelSelect.value;
@@ -503,7 +486,6 @@
             const phone = document.getElementById('clientPhone').value || 'Sin teléfono';
             const unit = modelSelect.value;
             const ver = versionSelect.value;
-            const price = formatCurrency(currentPrice);
             const eng = formatCurrency(parseFloat(downPaymentSelect.value) || 0);
             const m72 = document.getElementById('month72').textContent;
             const m60 = document.getElementById('month60').textContent;
@@ -513,7 +495,6 @@
             return `¡Hola Abel! Mi nombre es ${name} (Tel: ${phone}). Me interesa cotizar la unidad:\n` +
                 `🚗 *Unidad:* ${unit}\n` +
                 `⚙️ *Versión:* ${ver}\n` +
-                `🏷️ *Precio:* ${price}\n` +
                 `💵 *Enganche:* ${eng}\n\n` +
                 `*Plazos y Mensualidades:*\n` +
                 `• 72 meses: ${m72}\n` +
@@ -539,9 +520,7 @@
             const clientPhone = document.getElementById('clientPhone').value || 'N/A';
             const unit = modelSelect.value;
             const ver = versionSelect.value;
-            const price = formatCurrency(currentPrice);
             const eng = formatCurrency(parseFloat(downPaymentSelect.value) || 0);
-            const promo = promoBanner.classList.contains('hidden') ? '' : promoText.textContent;
             const rate = rateLabel.textContent;
 
             const m72 = document.getElementById('month72').textContent;
@@ -591,25 +570,15 @@
                             <td style="padding: 4px 0; font-weight: bold; text-align: right;">${ver}</td>
                         </tr>
                         <tr>
-                            <td style="padding: 4px 0; color: #6B7280;">Precio de Lista:</td>
-                            <td style="padding: 4px 0; font-weight: bold; text-align: right; font-size: 14px;">${price}</td>
-                        </tr>
-                        <tr>
                             <td style="padding: 4px 0; color: #6B7280;">Enganche Solicitado:</td>
                             <td style="padding: 4px 0; font-weight: bold; text-align: right; color: #059669;">${eng}</td>
                         </tr>
                         <tr>
-                            <td style="padding: 4px 0; color: #6B7280;">Tasa Aplicada:</td>
+                            <td style="padding: 4px 0; color: #6B7280;">Tasa Anual:</td>
                             <td style="padding: 4px 0; font-weight: bold; text-align: right;">${rate}</td>
                         </tr>
                     </table>
                 </div>
-
-                ${promo ? `
-                <div style="background-color: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; padding: 8px; border-radius: 6px; font-size: 11px; margin-bottom: 15px;">
-                    <strong>Promoción Activa:</strong> ${promo}
-                </div>
-                ` : ''}
 
                 <div style="margin-bottom: 20px; page-break-inside: avoid; break-inside: avoid;">
                     <h2 style="font-size: 14px; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px; margin-bottom: 8px;">Proyección de Mensualidades</h2>
@@ -642,7 +611,7 @@
                 </div>
 
                 <div style="margin-top: 25px; border-top: 1px solid #E5E7EB; padding-top: 10px; font-size: 9px; color: #9CA3AF; text-align: center; page-break-inside: avoid; break-inside: avoid;">
-                    <p style="margin: 0;">Cotización de carácter informativo. Sujeta a aprobación de crédito. Precios y promociones sujetos a cambios sin previo aviso.</p>
+                    <p style="margin: 0;">Cotización informativa sujeta a aprobación crediticia y validación documental.</p>
                     <p style="margin-top: 3px;">KIA MAX Saltillo | Asesoría: Abel Ortiz Silva (844 806 7192)</p>
                 </div>
             `;
@@ -668,10 +637,9 @@
             generatePDF();
         }
 
-        // Inicialización
         checkMaintenanceMode();
         if (!IS_MAINTENANCE) {
-            fetchVehiclesFromSheets();
+            fetchQuotesFromSheets();
         }
     </script>
 </body>
