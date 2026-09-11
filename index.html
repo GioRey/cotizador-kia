@@ -15,7 +15,6 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
-    <!-- Meta Datos Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="COTIZACIÓN TU AUTO KIA AQUÍ">
     <meta name="twitter:description" content="Obtén la cotización de tu auto KIA en segundos.">
@@ -26,6 +25,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- html2pdf.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- PapaParse CDN para leer la hoja en tiempo real -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -81,14 +83,11 @@
         <!-- Tarjeta del Formulario -->
         <div class="kia-card p-6 space-y-5 border border-zinc-800">
 
-            <!-- Tipo de Vehículo -->
+            <!-- Tipo de Vehículo (Sin opción TODOS) -->
             <div>
                 <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Tipo de Vehículo</label>
                 <select id="categorySelect"
                     class="custom-select w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white font-semibold focus:outline-none focus:ring-2 focus:ring-white">
-                    <option value="AUTOMAVIL">AUTOMÓVIL</option>
-                    <option value="SUV">SUV</option>
-                    <option value="HIBRIDO O ELECTRICO">HÍBRIDO / ELÉCTRICO</option>
                 </select>
             </div>
 
@@ -121,7 +120,7 @@
                 <span id="promoText"></span>
             </div>
 
-            <!-- Lista Desplegable de Enganches (3 Opciones) -->
+            <!-- Lista Desplegable de 3 Enganches -->
             <div>
                 <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Enganche</label>
                 <select id="downPaymentSelect"
@@ -240,9 +239,15 @@
         </div>
     </div>
 
-    <!-- Script Logic -->
+    <!-- Lógica del Cotizador -->
     <script>
         const IS_MAINTENANCE = false;
+
+        // URL de tu Google Sheets apuntando específicamente a la hoja 'LISTA DE PRECIOS'
+        const SPREADSHEET_ID = "1ed2SOQ9ZZHzuY_T94Wrq9ycqqwdMUrV4ktYQS2liq_4";
+        const GOOGLE_SHEETS_CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=LISTA%20DE%20PRECIOS`;
+
+        let vehicles = [];
 
         function checkMaintenanceMode() {
             const maintenanceScreen = document.getElementById('maintenanceScreen');
@@ -257,7 +262,6 @@
             }
         }
 
-        const vehicles = [{ "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "L Standard", "price": 304900, "promo": "Tasa desde 7.99% a 36 Meses" }, { "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "L Autom\u00e1tico", "price": 335500, "promo": "Bono de $15,000 + Tasa 10.84%" }, { "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "LX Standard", "price": 358600, "promo": "Tasa promocional disponible" }, { "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "LX Autom\u00e1tico", "price": 372600, "promo": "Tasa promocional disponible" }, { "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "EX Autom\u00e1tico", "price": 400300, "promo": "Tasa promocional disponible" }, { "model": "K3 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "EX Pack Autom\u00e1tico", "price": 435900, "promo": "Tasa promocional disponible" }, { "model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "LX Standard", "price": 429500, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "LX Autom\u00e1tico", "price": 443500, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "EX Autom\u00e1tico", "price": 487400, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "GT Line Autom\u00e1tico", "price": 520700, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Sed\u00e1n 2027", "category": "AUTOMOVIL", "version": "GT Line Turbo Autom\u00e1tico", "price": 574600, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Hatchback 2027", "category": "AUTOMOVIL", "version": "EX Autom\u00e1tico", "price": 489900, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Hatchback 2027", "category": "AUTOMOVIL", "version": "GT Line Autom\u00e1tico", "price": 528900, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "K4 Hatchback 2027", "category": "AUTOMOVIL", "version": "GT Line Turbo Autom\u00e1tico", "price": 581200, "promo": "Tasa Especial desde 8.99% a 36 Meses" }, { "model": "Sonet SUV 2027", "category": "SUV", "version": "LX Standard", "price": 398400, "promo": "Tasa desde 10.84% a 60 Meses" }, { "model": "Sonet SUV 2027", "category": "SUV", "version": "LX Autom\u00e1tica", "price": 411900, "promo": "Tasa desde 10.84% a 60 Meses" }, { "model": "Sonet SUV 2027", "category": "SUV", "version": "EX Autom\u00e1tica", "price": 433000, "promo": "Tasa desde 10.84% a 60 Meses" }, { "model": "Sonet SUV 2027", "category": "SUV", "version": "SX Autom\u00e1tica", "price": 475900, "promo": "Tasa desde 10.84% a 60 Meses" }, { "model": "Seltos SUV 2026", "category": "SUV", "version": "EX Autom\u00e1tico", "price": 470900, "promo": "Bono de $35,000 + Tasa 10.84%" }, { "model": "Seltos SUV 2026", "category": "SUV", "version": "EX Pack Autom\u00e1tico", "price": 528900, "promo": "Bono de $35,000 disponible" }, { "model": "Seltos SUV 2026", "category": "SUV", "version": "SX Autom\u00e1tico", "price": 551900, "promo": "Bono de $35,000 disponible" }, { "model": "Seltos SUV 2026", "category": "SUV", "version": "GT Line Autom\u00e1tico", "price": 587900, "promo": "Bono de $35,000 disponible" }, { "model": "Sportage SUV 2027", "category": "SUV", "version": "EX Autom\u00e1tica", "price": 647900, "promo": "Bono de $15,000 + Tasa desde 10.84%" }, { "model": "Sportage SUV 2027", "category": "SUV", "version": "EX Pack Autom\u00e1tico", "price": 706900, "promo": "Bono de $15,000 disponible" }, { "model": "Sportage SUV 2027", "category": "SUV", "version": "SXL Autom\u00e1tico", "price": 766900, "promo": "Bono de $15,000 disponible" }, { "model": "Sportage SUV H\u00edbrida 2026", "category": "HIBRIDO O ELECTRICO", "version": "EX Pack Autom\u00e1tica", "price": 799900, "promo": "Bono de $20,000 + Tasa desde 10.84%" }, { "model": "Sportage SUV H\u00edbrida 2026", "category": "HIBRIDO O ELECTRICO", "version": "X Line Autom\u00e1tico", "price": 893200, "promo": "Bono de $20,000 disponible" }, { "model": "Sportage SUV H\u00edbrida 2026", "category": "HIBRIDO O ELECTRICO", "version": "X Line Terra Autom\u00e1tico", "price": 894200, "promo": "Bono de $20,000 disponible" }, { "model": "Sorento SUV 2026", "category": "SUV", "version": "EX Autom\u00e1tica", "price": 833200, "promo": "Bono de $60,000 + Tasa desde 10.84%" }, { "model": "Sorento SUV 2026", "category": "SUV", "version": "EX Pack Autom\u00e1tico", "price": 897600, "promo": "Bono de $60,000 disponible" }, { "model": "Sorento SUV 2026", "category": "SUV", "version": "SXL Autom\u00e1tico", "price": 992900, "promo": "Bono de $60,000 disponible" }];
         const advisorEmail = "abel.ortiz@kiamax.com.mx";
         const advisorPhone = "528448067192";
 
@@ -275,6 +279,105 @@
 
         function formatCurrency(num) {
             return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(num);
+        }
+
+        // LECTOR INTELIGENTE PARA LA ESTRUCTURA EXACTA DEL EXCEL DE KIA
+        async function fetchVehiclesFromSheets() {
+            try {
+                const response = await fetch(GOOGLE_SHEETS_CSV_URL);
+                const csvData = await response.text();
+
+                Papa.parse(csvData, {
+                    header: false, // Leemos filas brutas para buscar encabezados
+                    skipEmptyLines: true,
+                    complete: function (results) {
+                        const rows = results.data;
+                        let headerFound = false;
+                        let colUnidad = -1, colVersion = -1, colTrans = -1, colPrecio = -1, colPromo = -1;
+                        let currentUnit = "";
+                        let currentUnitPromo = "";
+                        const parsedVehicles = [];
+
+                        for (let i = 0; i < rows.length; i++) {
+                            const row = rows[i].map(c => (c || '').toString().trim());
+                            const rowStr = row.join(' ').toUpperCase();
+
+                            // 1. Detectar la fila de encabezados reales
+                            if (!headerFound) {
+                                if (rowStr.includes("UNIDAD") && rowStr.includes("VERSION")) {
+                                    headerFound = true;
+                                    row.forEach((cell, idx) => {
+                                        const cUpper = cell.toUpperCase();
+                                        if (cUpper.includes("UNIDAD")) colUnidad = idx;
+                                        else if (cUpper.includes("VERSION")) colVersion = idx;
+                                        else if (cUpper.includes("TRANSMISION")) colTrans = idx;
+                                        else if (cUpper.includes("PRECIO")) colPrecio = idx;
+                                        else if (cUpper.includes("OFERTA") || cUpper.includes("PROMO")) colPromo = idx;
+                                    });
+                                    continue;
+                                }
+                            }
+
+                            // 2. Procesar filas de autos una vez localizadas las columnas
+                            if (headerFound) {
+                                const valUnidad = colUnidad !== -1 ? row[colUnidad] : "";
+                                if (valUnidad !== "") {
+                                    currentUnit = valUnidad;
+                                    currentUnitPromo = colPromo !== -1 ? row[colPromo] : "";
+                                }
+
+                                const valVersion = colVersion !== -1 ? row[colVersion] : "";
+                                const valTrans = colTrans !== -1 ? row[colTrans] : "";
+                                const valPrecio = colPrecio !== -1 ? row[colPrecio] : "";
+                                const valPromo = colPromo !== -1 ? row[colPromo] : "";
+
+                                // Limpiar precio
+                                const cleanPrice = parseFloat(valPrecio.replace(/[^0-9.]/g, ''));
+                                if (!cleanPrice || isNaN(cleanPrice) || !valVersion) continue;
+
+                                // Determinar categoría automáticamente
+                                const unitUpper = currentUnit.toUpperCase();
+                                let category = "AUTOMÓVIL";
+                                if (unitUpper.includes("HIBRID") || unitUpper.includes("HÍBRID") || unitUpper.includes("ELECTR")) {
+                                    category = "HÍBRIDO / ELÉCTRICO";
+                                } else if (unitUpper.includes("SUV") || unitUpper.includes("SONET") || unitUpper.includes("SELTOS") || unitUpper.includes("SPORTAGE") || unitUpper.includes("SORENTO")) {
+                                    category = "SUV";
+                                }
+
+                                const fullVersion = (valVersion + " " + valTrans).trim();
+                                const finalPromo = valPromo !== "" ? valPromo : currentUnitPromo;
+
+                                parsedVehicles.push({
+                                    category: category,
+                                    model: currentUnit,
+                                    version: fullVersion,
+                                    price: cleanPrice,
+                                    promo: finalPromo
+                                });
+                            }
+                        }
+
+                        if (parsedVehicles.length > 0) {
+                            vehicles = parsedVehicles;
+                            populateCategories();
+                            populateModels();
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Error al cargar la hoja:", error);
+            }
+        }
+
+        function populateCategories() {
+            const categories = [...new Set(vehicles.map(v => v.category))];
+            categorySelect.innerHTML = '';
+            categories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = cat;
+                categorySelect.appendChild(opt);
+            });
         }
 
         function populateModels() {
@@ -310,16 +413,15 @@
             updateQuote();
         }
 
-        // Genera exactamente 3 opciones de enganche según el precio de la unidad
         function populateDownPaymentOptions() {
             downPaymentSelect.innerHTML = '';
-            const percentages = [0.20, 0.30, 0.40]; // 3 enganches: 20%, 30% y 40%
+            const percentages = [0.20, 0.30, 0.40]; // 20%, 30% y 40%
 
             percentages.forEach(pct => {
                 const amount = Math.round(currentPrice * pct);
                 const opt = document.createElement('option');
                 opt.value = amount;
-                opt.textContent = `${formatCurrency(amount)}`;
+                opt.textContent = `${formatCurrency(amount)} (${pct * 100}%)`;
                 downPaymentSelect.appendChild(opt);
             });
         }
@@ -351,10 +453,9 @@
                 currentPrice = item.price;
                 listPriceEl.textContent = formatCurrency(item.price);
 
-                // Cargar las 3 opciones de enganche
                 populateDownPaymentOptions();
 
-                // Detección automática de la tasa según promoción del auto
+                // Asignación automática de tasa según promociones
                 if (item.promo && item.promo.includes('7.99%')) {
                     currentRate = 0.0799;
                 } else if (item.promo && item.promo.includes('8.99%')) {
@@ -383,7 +484,6 @@
         versionSelect.addEventListener('change', updateQuote);
         downPaymentSelect.addEventListener('change', calculatePayments);
 
-        // Funciones del Modal
         function openModal() {
             document.getElementById('summaryUnit').textContent = modelSelect.value;
             document.getElementById('summaryVersion').textContent = versionSelect.value;
@@ -433,7 +533,6 @@
             window.open(`mailto:${advisorEmail}?subject=${subject}&body=${text}`, '_blank');
         }
 
-        // Generación de PDF
         function generatePDF() {
             const clientName = document.getElementById('clientName').value || 'Cliente';
             const clientPhone = document.getElementById('clientPhone').value || 'N/A';
@@ -568,9 +667,10 @@
             generatePDF();
         }
 
+        // Inicialización
         checkMaintenanceMode();
         if (!IS_MAINTENANCE) {
-            populateModels();
+            fetchVehiclesFromSheets();
         }
     </script>
 </body>
