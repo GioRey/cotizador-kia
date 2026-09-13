@@ -17,7 +17,7 @@
     <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    
+
     <!-- Meta Datos Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="COTIZACIÓN TU AUTO KIA AQUÍ">
@@ -109,6 +109,12 @@
                 <select id="versionSelect"
                     class="custom-select w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white font-semibold focus:outline-none focus:ring-2 focus:ring-white">
                 </select>
+            </div>
+
+            <!-- Precio de Lista -->
+            <div class="bg-zinc-900 rounded-xl p-3 flex justify-between items-center border border-zinc-800">
+                <span class="text-xs text-gray-400 font-medium">Precio de Lista:</span>
+                <span id="listPrice" class="text-base font-bold text-white">$0.00</span>
             </div>
 
             <!-- Lista Desplegable de los 3 Enganches del Excel -->
@@ -232,29 +238,11 @@
 
     <!-- Script Logic -->
     <script>
-        // si esta  en FALSE es que se puede ver
-        // si esta en TRUE es que se ve la pantalla de mantenimiento
-        const IS_MAINTENANCE = true;
-
-        // ID de tu Google Sheets apuntando específicamente a la pestaña COTIZACIONES
+        // ID de tu Google Sheets apuntando a la pestaña COTIZACIONES
         const SPREADSHEET_ID = "1GqRItvqCd9CJOVg_bEsA1z4pnu0VfsbG";
         const GOOGLE_SHEETS_CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=COTIZACIONES`;
 
-        // Almacén estructurado por [categoría][modelo][versión] -> { tasa, enganches: { [monto]: { 72: x, 60: y, 48: z, 36: w } } }
         let quotesData = {};
-
-        function checkMaintenanceMode() {
-            const maintenanceScreen = document.getElementById('maintenanceScreen');
-            const appContainer = document.getElementById('appContainer');
-
-            if (IS_MAINTENANCE) {
-                maintenanceScreen.classList.remove('hidden');
-                appContainer.classList.add('hidden');
-            } else {
-                maintenanceScreen.classList.add('hidden');
-                appContainer.classList.remove('hidden');
-            }
-        }
 
         const advisorEmail = "abel.ortiz@kiamax.com.mx";
         const advisorPhone = "528448067192";
@@ -264,6 +252,7 @@
         const versionSelect = document.getElementById('versionSelect');
         const downPaymentSelect = document.getElementById('downPaymentSelect');
         const rateLabel = document.getElementById('rateLabel');
+        const listPriceEl = document.getElementById('listPrice');
 
         function formatCurrency(num) {
             return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(num);
@@ -280,18 +269,19 @@
         }
 
         function setMaintenanceView(isMaintenance) {
-                const maintenanceScreen = document.getElementById('maintenanceScreen');
-                const appContainer = document.getElementById('appContainer');
+            const maintenanceScreen = document.getElementById('maintenanceScreen');
+            const appContainer = document.getElementById('appContainer');
 
-                if (isMaintenance) {
-                    maintenanceScreen.classList.remove('hidden');
-                    appContainer.classList.add('hidden');
-                } else {
-                    maintenanceScreen.classList.add('hidden');
-                    appContainer.classList.remove('hidden');
-                }
+            if (isMaintenance) {
+                maintenanceScreen.classList.remove('hidden');
+                appContainer.classList.add('hidden');
+            } else {
+                maintenanceScreen.classList.add('hidden');
+                appContainer.classList.remove('hidden');
             }
-        // LECTOR DE LA PESTAÑA 'COTIZACIONES' Y DE LA COLUMNA 'MANTENIMIENTO'
+        }
+
+        // LECTOR DE LA PESTAÑA 'COTIZACIONES' (SOLO DATOS EXACTOS DEL DOCUMENTO)
             async function fetchQuotesFromSheets() {
                 try {
                     const response = await fetch(GOOGLE_SHEETS_CSV_URL);
@@ -302,13 +292,14 @@
                         skipEmptyLines: true,
                         complete: function (results) {
                             const rows = results.data;
-                            let colModel = -1, colVer = -1, colTasa = -1, colEng = -1, colPlazo = -1, colMens = -1, colMantenimiento = -1;
+                            let colModel = -1, colVer = -1, colTasa = -1, colEng = -1, colPlazo = -1, colMens = -1, colPrecio = -1, colMantenimiento = -1;
                             let headerFound = false;
 
                             let currentModel = "";
                             let currentVersion = "";
                             let currentTasa = 0.1299;
-                            let currentEnganche = 0;
+                            let currentPrecio = 0;
+                            let currentEnganche = null;
                             let isSiteInMaintenance = false;
 
                             quotesData = {};
@@ -329,13 +320,14 @@
                                             else if (cUpper.includes("ENGANCHE")) colEng = idx;
                                             else if (cUpper.includes("PLAZO")) colPlazo = idx;
                                             else if (cUpper.includes("MENSUALIDAD")) colMens = idx;
+                                            else if (cUpper.includes("PRECIO")) colPrecio = idx;
                                             else if (cUpper.includes("MANTENIMIENTO")) colMantenimiento = idx;
                                         });
                                         continue;
                                     }
                                 }
 
-                                // 2. Procesar filas y estado de mantenimiento
+                                // 2. Procesar filas
                                 if (headerFound) {
                                     if (colMantenimiento !== -1 && r[colMantenimiento]) {
                                         const mantVal = r[colMantenimiento].toLowerCase();
@@ -350,6 +342,7 @@
                                     const valEng = colEng !== -1 ? r[colEng] : "";
                                     const valPlazo = colPlazo !== -1 ? r[colPlazo] : "";
                                     const valMens = colMens !== -1 ? r[colMens] : "";
+                                    const valPrecio = colPrecio !== -1 ? r[colPrecio] : "";
 
                                     if (valModel !== "") currentModel = valModel;
                                     if (valVer !== "") currentVersion = valVer;
@@ -359,6 +352,12 @@
                                         if (!isNaN(parsedTasa)) currentTasa = parsedTasa;
                                     }
 
+                                    if (valPrecio !== "") {
+                                        const parsedPrecio = parseFloat(valPrecio.replace(/[^0-9.]/g, ''));
+                                        if (!isNaN(parsedPrecio) && parsedPrecio > 0) currentPrecio = parsedPrecio;
+                                    }
+
+                                    // Tomar el valor del enganche tal cual viene en la celda
                                     if (valEng !== "") {
                                         const parsedEng = parseFloat(valEng.replace(/[^0-9.]/g, ''));
                                         if (!isNaN(parsedEng)) currentEnganche = parsedEng;
@@ -367,7 +366,7 @@
                                     const plazoNum = parseInt(valPlazo.replace(/[^0-9]/g, ''));
                                     const mensNum = parseFloat(valMens.replace(/[^0-9.]/g, ''));
 
-                                    if (!currentModel || !currentVersion || !currentEnganche || isNaN(plazoNum) || isNaN(mensNum)) {
+                                    if (!currentModel || !currentVersion || currentEnganche === null || isNaN(plazoNum)) {
                                         continue;
                                     }
 
@@ -378,19 +377,22 @@
                                     if (!quotesData[category][currentModel][currentVersion]) {
                                         quotesData[category][currentModel][currentVersion] = {
                                             tasa: currentTasa,
+                                            precio: currentPrecio,
                                             enganches: {}
                                         };
+                                    } else if (currentPrecio > 0) {
+                                        quotesData[category][currentModel][currentVersion].precio = currentPrecio;
                                     }
 
+                                    // Guarda exclusivamente el enganche registrado en el Excel
                                     if (!quotesData[category][currentModel][currentVersion].enganches[currentEnganche]) {
                                         quotesData[category][currentModel][currentVersion].enganches[currentEnganche] = {};
                                     }
 
-                                    quotesData[category][currentModel][currentVersion].enganches[currentEnganche][plazoNum] = mensNum;
+                                    quotesData[category][currentModel][currentVersion].enganches[currentEnganche][plazoNum] = isNaN(mensNum) ? 0 : mensNum;
                                 }
                             }
 
-                            // Activa o desactiva la vista según el valor de mantenimiento
                             setMaintenanceView(isSiteInMaintenance);
 
                             if (!isSiteInMaintenance) {
@@ -460,6 +462,11 @@
             if (quotesData[cat] && quotesData[cat][model] && quotesData[cat][model][ver]) {
                 const versionObj = quotesData[cat][model][ver];
 
+                // Mostrar el Precio de Lista obtenido de la columna PRECIO
+                if (listPriceEl) {
+                    listPriceEl.textContent = formatCurrency(versionObj.precio || 0);
+                }
+
                 // Actualizar tasa automática
                 const tasaVal = versionObj.tasa < 1 ? versionObj.tasa * 100 : versionObj.tasa;
                 rateLabel.textContent = `${tasaVal.toFixed(2)}%`;
@@ -477,21 +484,22 @@
             updateMonthlyPayments();
         }
 
-        function updateMonthlyPayments() {
-            const cat = categorySelect.value;
-            const model = modelSelect.value;
-            const ver = versionSelect.value;
-            const eng = parseFloat(downPaymentSelect.value);
+        // ACTUALIZACIÓN DE MENSUALIDADES DIRECTA (SIN FÓRMULAS ESTIMADAS)
+            function updateMonthlyPayments() {
+                const cat = categorySelect.value;
+                const model = modelSelect.value;
+                const ver = versionSelect.value;
+                const eng = parseFloat(downPaymentSelect.value);
 
-            if (quotesData[cat] && quotesData[cat][model] && quotesData[cat][model][ver]) {
-                const plazos = quotesData[cat][model][ver].enganches[eng] || {};
+                if (quotesData[cat] && quotesData[cat][model] && quotesData[cat][model][ver]) {
+                    const plazos = quotesData[cat][model][ver].enganches[eng] || {};
 
-                document.getElementById('month72').textContent = formatCurrency(plazos[72] || 0);
-                document.getElementById('month60').textContent = formatCurrency(plazos[60] || 0);
-                document.getElementById('month48').textContent = formatCurrency(plazos[48] || 0);
-                document.getElementById('month36').textContent = formatCurrency(plazos[36] || 0);
+                    document.getElementById('month72').textContent = formatCurrency(plazos[72] !== undefined ? plazos[72] : 0);
+                    document.getElementById('month60').textContent = formatCurrency(plazos[60] !== undefined ? plazos[60] : 0);
+                    document.getElementById('month48').textContent = formatCurrency(plazos[48] !== undefined ? plazos[48] : 0);
+                    document.getElementById('month36').textContent = formatCurrency(plazos[36] !== undefined ? plazos[36] : 0);
+                }
             }
-        }
 
         categorySelect.addEventListener('change', populateModels);
         modelSelect.addEventListener('change', populateVersions);
@@ -516,6 +524,7 @@
             const phone = document.getElementById('clientPhone').value || 'Sin teléfono';
             const unit = modelSelect.value;
             const ver = versionSelect.value;
+            const price = listPriceEl ? listPriceEl.textContent : '$0.00';
             const eng = formatCurrency(parseFloat(downPaymentSelect.value) || 0);
             const m72 = document.getElementById('month72').textContent;
             const m60 = document.getElementById('month60').textContent;
@@ -525,6 +534,7 @@
             return `¡Hola Abel! Mi nombre es ${name} (Tel: ${phone}). Me interesa cotizar la unidad:\n` +
                 `🚗 *Unidad:* ${unit}\n` +
                 `⚙️ *Versión:* ${ver}\n` +
+                `🏷️ *Precio:* ${price}\n` +
                 `💵 *Enganche:* ${eng}\n\n` +
                 `*Plazos y Mensualidades:*\n` +
                 `• 72 meses: ${m72}\n` +
@@ -550,6 +560,7 @@
             const clientPhone = document.getElementById('clientPhone').value || 'N/A';
             const unit = modelSelect.value;
             const ver = versionSelect.value;
+            const price = listPriceEl ? listPriceEl.textContent : '$0.00';
             const eng = formatCurrency(parseFloat(downPaymentSelect.value) || 0);
             const rate = rateLabel.textContent;
 
@@ -598,6 +609,10 @@
                         <tr>
                             <td style="padding: 4px 0; color: #6B7280;">Versión:</td>
                             <td style="padding: 4px 0; font-weight: bold; text-align: right;">${ver}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px 0; color: #6B7280;">Precio de Lista:</td>
+                            <td style="padding: 4px 0; font-weight: bold; text-align: right; font-size: 14px;">${price}</td>
                         </tr>
                         <tr>
                             <td style="padding: 4px 0; color: #6B7280;">Enganche Solicitado:</td>
@@ -667,10 +682,8 @@
             generatePDF();
         }
 
-        // checkMaintenanceMode();
-        // if (!IS_MAINTENANCE) {
-            fetchQuotesFromSheets();
-        // }
+        // Ejecutar lectura directa desde Google Sheets
+        fetchQuotesFromSheets();
     </script>
 </body>
 
