@@ -116,6 +116,11 @@
                 <span class="text-xs text-gray-400 font-medium">Precio de Lista:</span>
                 <span id="listPrice" class="text-base font-bold text-white">$0.00</span>
             </div>
+            <!-- Observación -->
+            <div id="observationBanner" class="hidden bg-zinc-900/90 border border-amber-500/40 rounded-xl p-3 text-xs text-amber-200 flex items-start gap-2.5">
+                <i class="fa-solid fa-circle-info text-amber-400 mt-0.5 text-sm shrink-0"></i>
+                <span id="observationText"></span>
+            </div>
 
             <!-- Lista Desplegable de los 3 Enganches del Excel -->
             <div>
@@ -292,7 +297,7 @@
                         skipEmptyLines: true,
                         complete: function (results) {
                             const rows = results.data;
-                            let colModel = -1, colVer = -1, colTasa = -1, colEng = -1, colPlazo = -1, colMens = -1, colPrecio = -1, colMantenimiento = -1;
+                            let colModel = -1, colVer = -1, colTasa = -1, colEng = -1, colPlazo = -1, colMens = -1, colPrecio = -1, colObs = -1, colMantenimiento = -1;
                             let headerFound = false;
 
                             let currentModel = "";
@@ -300,6 +305,7 @@
                             let currentTasa = 0.1299;
                             let currentPrecio = 0;
                             let currentEnganche = null;
+                            let currentObservacion = "";
                             let isSiteInMaintenance = false;
 
                             quotesData = {};
@@ -321,6 +327,7 @@
                                             else if (cUpper.includes("PLAZO")) colPlazo = idx;
                                             else if (cUpper.includes("MENSUALIDAD")) colMens = idx;
                                             else if (cUpper.includes("PRECIO")) colPrecio = idx;
+                                            else if (cUpper.includes("OBSERVACION")) colObs = idx;
                                             else if (cUpper.includes("MANTENIMIENTO")) colMantenimiento = idx;
                                         });
                                         continue;
@@ -342,6 +349,8 @@
                                     const valEng = colEng !== -1 ? r[colEng] : "";
                                     const valPlazo = colPlazo !== -1 ? r[colPlazo] : "";
                                     const valMens = colMens !== -1 ? r[colMens] : "";
+                                    const valObs = colObs !== -1 ? r[colObs] : "";
+                                    if (valObs !== "") currentObservacion = valObs;
                                     const valPrecio = colPrecio !== -1 ? r[colPrecio] : "";
 
                                     if (valModel !== "") currentModel = valModel;
@@ -378,10 +387,13 @@
                                         quotesData[category][currentModel][currentVersion] = {
                                             tasa: currentTasa,
                                             precio: currentPrecio,
+                                            observacion: currentObservacion,
                                             enganches: {}
                                         };
                                     } else if (currentPrecio > 0) {
                                         quotesData[category][currentModel][currentVersion].precio = currentPrecio;
+                                    } else if (currentObservacion) {
+                                        quotesData[category][currentModel][currentVersion].observacion = currentObservacion;
                                     }
 
                                     // Guarda exclusivamente el enganche registrado en el Excel
@@ -462,6 +474,17 @@
             if (quotesData[cat] && quotesData[cat][model] && quotesData[cat][model][ver]) {
                 const versionObj = quotesData[cat][model][ver];
 
+                const obsBanner = document.getElementById('observationBanner');
+                const obsText = document.getElementById('observationText');
+                if (obsBanner && obsText) {
+                    if (versionObj.observacion && versionObj.observacion.trim() !== '') {
+                        obsText.textContent = versionObj.observacion;
+                        obsBanner.classList.remove('hidden');
+                    } else {
+                        obsBanner.classList.add('hidden');
+                    }
+                }
+
                 // Mostrar el Precio de Lista obtenido de la columna PRECIO
                 if (listPriceEl) {
                     listPriceEl.textContent = formatCurrency(versionObj.precio || 0);
@@ -531,11 +554,17 @@
             const m48 = document.getElementById('month48').textContent;
             const m36 = document.getElementById('month36').textContent;
 
+            const cat = categorySelect.value;
+            const obs = (quotesData[cat] && quotesData[cat][unit] && quotesData[cat][unit][ver] && quotesData[cat][unit][ver].observacion)
+                ? `\n📌 *Nota:* ${quotesData[cat][unit][ver].observacion}\n`
+                : '';
+
             return `¡Hola Abel! Mi nombre es ${name} (Tel: ${phone}). Me interesa cotizar la unidad:\n` +
                 `🚗 *Unidad:* ${unit}\n` +
                 `⚙️ *Versión:* ${ver}\n` +
                 `🏷️ *Precio:* ${price}\n` +
-                `💵 *Enganche:* ${eng}\n\n` +
+                `💵 *Enganche:* ${eng}\n` +
+                `ℹ️ *Observación:* ${obs}\n\n` +
                 `*Plazos y Mensualidades:*\n` +
                 `• 72 meses: ${m72}\n` +
                 `• 60 meses: ${m60}\n` +
@@ -568,6 +597,10 @@
             const m60 = document.getElementById('month60').textContent;
             const m48 = document.getElementById('month48').textContent;
             const m36 = document.getElementById('month36').textContent;
+            const cat = categorySelect.value;
+            const obs = (quotesData[cat] && quotesData[cat][unit] && quotesData[cat][unit][ver])
+                ? quotesData[cat][unit][ver].observacion
+                : '';
 
             const today = new Date().toLocaleDateString('es-MX', {
                 year: 'numeric', month: 'long', day: 'numeric'
@@ -623,6 +656,11 @@
                             <td style="padding: 4px 0; font-weight: bold; text-align: right;">${rate}</td>
                         </tr>
                     </table>
+                    ${obs ? `
+                <div style="background-color: #FEF3C7; border: 1px solid #FCD34D; color: #92400E; padding: 8px 12px; border-radius: 6px; font-size: 11px; margin-bottom: 15px;">
+                    <strong>Observación:</strong> ${obs}
+                </div>
+                ` : ''}
                 </div>
 
                 <div style="margin-bottom: 20px; page-break-inside: avoid; break-inside: avoid;">
